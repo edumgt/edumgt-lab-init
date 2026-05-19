@@ -2745,7 +2745,7 @@ code --install-extension GoogleCloudTools.cloudcode
 ### A6-1. Ollama (로컬 LLM)
 
 #### 개요
-Ollama 는 로컬 PC 에서 오픈 웨이트 LLM 을 직접 내려받아 실행할 수 있는 도구입니다.
+Ollama 는 로컬 PC 에서 open-weight LLM 을 직접 내려받아 실행할 수 있는 도구입니다.
 API 비용 없이 오프라인/사내망 환경에서도 사용할 수 있어 개인 학습, 보안 제약 환경, 빠른 프로토타이핑에 적합합니다.
 
 #### 설치 전 권장 사양
@@ -2818,7 +2818,7 @@ ollama rm qwen2.5-coder:7b
 
 #### 로컬 API 호출 예시
 
-Ollama 는 기본적으로 `http://localhost:11434` 에 OpenAI 유사한 로컬 API 를 제공합니다.
+Ollama 는 기본적으로 `http://localhost:11434` 에 OpenAI 호환 형태의 로컬 API 를 제공합니다.
 
 ```bash
 curl http://localhost:11434/api/generate \
@@ -2869,7 +2869,7 @@ curl http://localhost:11434/api/generate \
 #### 시나리오별 권장 조합
 
 **개인 학습 / 사이드 프로젝트**
-- Gemini (무료 티어) + Ollama (로컬 모델) + GitHub Copilot (무료 플랜)
+- Gemini (무료 티어) + Ollama (로컬 모델) + GitHub Copilot (무료 플랜) + Continue 확장
 
 **팀 개발 / 스타트업**
 - GitHub Copilot Business + Claude API (코드 리뷰 자동화) + Codex CLI

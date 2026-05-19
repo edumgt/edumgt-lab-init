@@ -55,6 +55,7 @@
 | AWS 실습 | 필수(가입) | 0 ~ 20 | 0 ~ 약 27,000원 | 프리티어 내 사용 권장, 초과 시 과금 |
 | 선택: GitHub Copilot Individual | 선택 | 10 | 약 13,500원 | 학생/오픈소스 기여자는 무료 가능 |
 | 선택: OpenAI/Claude/Gemini API | 선택 | 5 ~ 30+ | 약 6,750 ~ 40,500원+ | 호출량 기반 종량제 |
+| 선택: Ollama + 로컬 모델 | 선택 | 0 | 0원 | 로컬 PC 자원(RAM/디스크) 추가 사용 |
 
 - **최소 시나리오(필수만, 프리티어 준수)**: 월 **0 ~ 약 27,000원**
 - **권장 시나리오(필수 + Copilot)**: 월 **약 13,500 ~ 40,500원**
@@ -2741,6 +2742,118 @@ code --install-extension GoogleCloudTools.cloudcode
 
 ---
 
+### A6-1. Ollama (로컬 LLM)
+
+#### 개요
+Ollama 는 로컬 PC 에서 오픈 웨이트 LLM 을 직접 내려받아 실행할 수 있는 도구입니다.
+API 비용 없이 오프라인/사내망 환경에서도 사용할 수 있어 개인 학습, 보안 제약 환경, 빠른 프로토타이핑에 적합합니다.
+
+#### 설치 전 권장 사양
+| 모델 크기 예시 | 권장 RAM | 비고 |
+|---------------|----------|------|
+| 3B ~ 7B | 16GB 이상 | 입문/학습용 |
+| 8B ~ 14B | 32GB 이상 | 코드 생성/리뷰 품질 향상 |
+| 32B 이상 | 64GB 이상 | 고사양 워크스테이션 권장 |
+
+#### 설치 방법
+
+**Windows**
+```powershell
+winget install Ollama.Ollama
+```
+
+또는 공식 사이트에서 설치:
+- https://ollama.com/download/windows
+
+**macOS**
+```bash
+brew install --cask ollama
+```
+
+또는 공식 사이트에서 설치:
+- https://ollama.com/download/mac
+
+**Linux / WSL**
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+설치 확인:
+```bash
+ollama --version
+```
+
+#### 첫 실행 및 모델 다운로드
+
+```bash
+# 서버 실행 (macOS/Linux/WSL)
+ollama serve
+```
+
+Windows 는 설치 후 Ollama 앱이 백그라운드에서 실행되는지 확인하면 됩니다.
+
+```bash
+# 범용 모델 예시
+ollama pull llama3.1:8b
+
+# 코딩 특화 모델 예시
+ollama pull qwen2.5-coder:7b
+```
+
+#### 기본 사용법
+
+```bash
+# 대화형 실행
+ollama run qwen2.5-coder:7b
+
+# 설치된 모델 목록
+ollama list
+
+# 현재 실행 중인 모델 확인
+ollama ps
+
+# 모델 삭제
+ollama rm qwen2.5-coder:7b
+```
+
+#### 로컬 API 호출 예시
+
+Ollama 는 기본적으로 `http://localhost:11434` 에 OpenAI 유사한 로컬 API 를 제공합니다.
+
+```bash
+curl http://localhost:11434/api/generate \
+  -d '{
+    "model": "qwen2.5-coder:7b",
+    "prompt": "FastAPI hello world 예제를 작성해줘",
+    "stream": false
+  }'
+```
+
+#### VS Code / Continue 연동 예시
+
+```json
+{
+  "models": [
+    {
+      "title": "Qwen2.5 Coder 7B (Ollama)",
+      "provider": "ollama",
+      "model": "qwen2.5-coder:7b"
+    }
+  ]
+}
+```
+
+#### 운영 팁
+- 처음 모델을 받을 때는 수 GB 이상 다운로드가 발생할 수 있으므로 디스크 여유 공간을 먼저 확인하세요.
+- 노트북에서는 배터리/발열 영향이 크므로 전원 연결 상태에서 실행하는 것을 권장합니다.
+- 사내망/오프라인 환경에서는 먼저 설치 파일과 모델 다운로드 가능 여부를 확인하세요.
+
+### 공식 사이트
+- https://ollama.com/
+- https://ollama.com/search
+
+---
+
 ### A7. AI Agent 도구 비교 및 선택 가이드
 
 | 도구 | 제공사 | 무료 여부 | 주요 강점 | 코딩 특화 기능 |
@@ -2751,17 +2864,18 @@ code --install-extension GoogleCloudTools.cloudcode
 | Codex CLI | OpenAI | API 비용 발생 | 터미널 자율 에이전트 | 파일 수정·명령 실행 자동화 |
 | Copilot | GitHub/MS | 개인 $10/월 (학생 무료) | IDE 깊은 통합, PR 에이전트 | 자동완성, Chat, Coding Agent |
 | Gemini | Google | 무료 티어 제공 | 1M 컨텍스트, 멀티모달 | 코드 실행 도구 내장 |
+| Ollama | Ollama | 로컬 실행 무료 | 로컬 모델, 오프라인 사용, 비용 예측 쉬움 | 로컬 추론, 자체 API, Continue 연동 |
 
 #### 시나리오별 권장 조합
 
 **개인 학습 / 사이드 프로젝트**
-- Gemini (무료 티어) + GitHub Copilot (무료 플랜) + Continue 확장
+- Gemini (무료 티어) + Ollama (로컬 모델) + GitHub Copilot (무료 플랜)
 
 **팀 개발 / 스타트업**
 - GitHub Copilot Business + Claude API (코드 리뷰 자동화) + Codex CLI
 
 **엔터프라이즈 / 사내망**
-- GitHub Copilot Enterprise + OpenAI API (사내 게이트웨이 경유) + MCP 서버
+- GitHub Copilot Enterprise + Ollama (사내 로컬 모델) + MCP 서버
 
 ---
 
@@ -2778,6 +2892,7 @@ ANTHROPIC_API_KEY=sk-ant-your-anthropic-key
 GEMINI_API_KEY=AIza-your-gemini-key
 XAI_API_KEY=xai-your-xai-key
 GITHUB_TOKEN=ghp-your-github-token
+OLLAMA_HOST=http://localhost:11434
 ```
 
 ```bash
@@ -2800,6 +2915,7 @@ load_dotenv()  # .env 파일 자동 로드
 
 openai_key = os.getenv("OPENAI_API_KEY")
 anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 ```
 
 #### Continue 확장으로 여러 AI 모델 통합 (`~/.continue/config.json`)
@@ -2838,6 +2954,11 @@ code --install-extension Continue.continue
       "model": "grok-3",
       "apiBase": "https://api.x.ai/v1",
       "apiKey": "xai-your-xai-key"
+    },
+    {
+      "title": "Qwen2.5 Coder 7B (Local)",
+      "provider": "ollama",
+      "model": "qwen2.5-coder:7b"
     }
   ],
   "tabAutocompleteModel": {

@@ -1,3 +1,247 @@
+# edumgt 프로젝트 허브
+
+> **edumgt** 교육 과정에서 운영되는 전체 프로젝트 목록과 상호 연관도입니다.
+
+---
+
+## 프로젝트 목록 (23개)
+
+### 🧱 1단계 — 개발환경 & 기초
+
+| 저장소 | 설명 | 핵심 기술 |
+|--------|------|-----------|
+| **edumgt-lab-init** | 개발환경 최초 설정 가이드. WSL2·Python·Node·Java·Docker·K8s 순차 실습 | WSL2, Python, Node.js, Java, Docker, K8s |
+| **python-basic-lab** | 파이썬 기초 + 영상편집·오디오TTS·PDF/이미지 처리·통계 실습 | Python, FastAPI, OpenCV, TTS |
+| **Python-Shooting_Game** | asyncio + WebSocket 2인용 네트워크 슈팅 게임 (Python 비동기 학습용) | Python asyncio, WebSocket, HTML5 Canvas |
+
+---
+
+### 🐳 2단계 — 인프라 & 클라우드
+
+| 저장소 | 설명 | 핵심 기술 |
+|--------|------|-----------|
+| **docker-class** | Docker 기초~심화 20개 Lab + Jenkins·GitLab·SonarQube·Nexus·Drone 온프레미스 DevSecOps | Docker, Jenkins, GitLab CE, SonarQube, Nexus |
+| **Kubernetes-Class-Master** | K8s 아키텍처 → Pod/RS/Deployment → HPA → Ingress 단계별 실습 (VMware/VirtualBox) | kubeadm, kubectl, Calico, MetalLB, NGINX Ingress |
+| **openstack-private-cloud** | Ansible 기반 OpenStack 프라이빗 클라우드 구축 (Keystone/Glance/Nova/Neutron/Cinder) | Ansible, OpenStack, Ubuntu |
+| **AWS-serverless** | AWS Lambda + API Gateway 서버리스 실습 (Node.js·Python·Java, CLI/콘솔 양방향) | AWS Lambda, API Gateway, Serverless Framework |
+| **aws-ec2-alb-lab** | AWS 계정 보안 설정 → EC2/VPC/ALB → Auto Scaling → ECS Fargate 배포까지 Lab | AWS EC2, ALB, ECS Fargate, FastAPI |
+
+---
+
+### 📊 3단계 — 데이터 수집 & 전처리
+
+| 저장소 | 설명 | 핵심 기술 |
+|--------|------|-----------|
+| **python-crawling-lab** | 네이버/다음 금융·KRX ETF 크롤러 + Qdrant Vector DB 연동 실습 | Python, BeautifulSoup, Qdrant, OpenSanctions |
+
+---
+
+### 🤖 4단계 — 머신러닝 & 딥러닝
+
+| 저장소 | 설명 | 핵심 기술 |
+|--------|------|-----------|
+| **py-ml-dl-lab** | Python ML/DL 챕터별 실습 (Bayes·CNN·챗봇·MySQL 연동 등) | scikit-learn, Keras, TensorFlow, MySQL |
+| **python-ml-class** | 머신러닝 기초 → Transformer 주가 방향 분류 모델 구현 | scikit-learn, PyTorch, Transformer, yfinance |
+| **ai-agent-lab** | Python AI Agent 종합 커리큘럼 (Python→전처리/시각화→ML/DL→NLP/음성→에이전트) | Python, scikit-learn, HuggingFace, LangChain, Qdrant |
+
+---
+
+### 🦜 5단계 — LLM & RAG
+
+| 저장소 | 설명 | 핵심 기술 |
+|--------|------|-----------|
+| **Python-Langchain-Lab** | LangChain 기능 카탈로그 (LCEL·RAG·Agent·VectorStore, Ollama/OpenAI 스위칭) | LangChain, Ollama, OpenAI, Qdrant, Langfuse |
+| **aihub-rag** | AI Hub 데이터 기반 심리상담·의료·법률 도메인 RAG + 자동평가 (반응형 웹 UI) | FastAPI, Qdrant, HuggingFace, Docker |
+| **AI-Python-Domain-RAG** | 의학·고교영어 도메인 특화 RAG 에이전트 (Tool Calling + Streamlit UI) | FastAPI, Qdrant, PostgreSQL, Redis, vLLM, Streamlit |
+| **education-counsel** | 학생 진로탐색 AI 상담 시스템 (RAG Chatbot, FastAPI + 반응형 웹) | FastAPI, MongoDB, Qdrant, Docker |
+| **ollama-llava-canvas** | Ollama LLaVA 기반 캔버스 드로잉 + AI 이미지 향상 (FastAPI + HTML5 Canvas) | Ollama, LLaVA, FastAPI, SQLite |
+
+---
+
+### 📈 6단계 — 금융 & 투자 실전 프로젝트
+
+| 저장소 | 설명 | 핵심 기술 |
+|--------|------|-----------|
+| **investment-analysis** | 금융자산 지식 RAG 구축 (취업 목적 자산운용 시스템, 데이터 누적형) | FastAPI, Qdrant, MongoDB, Python |
+| **python-ai-basic-lab** | AI 기초 + 주식 데이터 실습 (TurboQuant 개념, 캔들+거래량 차트 동기화) | FastAPI, Plotly, yfinance, Docker |
+| **stock-ML-DL-project** | 주식 ML/DL 전체 파이프라인 (Django+Airflow+Kafka+Flask+K8s 배포) | Django, Airflow, Kafka, Flask, K8s, Docker |
+| **stock-coin-trade** | 한국 4대 코인거래소 시세 + Spring Boot 모의투자 웹앱 (Java) | Spring Boot, Thymeleaf, Tailwind CSS, PostgreSQL |
+| **lumina-invest** | 투자 분석 AI 웹앱 (Neo4j 그래프 + FastAPI + 대화관리) ← **선수: openstack-private-cloud** | FastAPI, Neo4j, Qdrant, Docker |
+| **calflow** | AI 기반 개인 투자 일정 관리 앱 (InvestFlow) — Vue3 + Node.js + Claude AI | Vue 3, Node.js, PostgreSQL, Claude AI, Airflow |
+
+---
+
+## 프로젝트 연관도
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         1단계: 개발환경 & 기초                               │
+│                                                                              │
+│   edumgt-lab-init ──────────────────────────────────────────────────────┐   │
+│   (WSL2·Python·Node·Java·Docker·K8s 환경 구축)                          │   │
+└──────────────────────────────────────────────────────────────────────────│──┘
+                                                                          │
+          ┌───────────────────┬──────────────────────────────┬────────────┘
+          ▼                   ▼                              ▼
+┌─────────────────┐  ┌────────────────────┐       ┌─────────────────────┐
+│ python-basic-   │  │   docker-class     │       │ Python-Shooting_    │
+│ lab             │  │ (Docker 기초~심화   │       │ Game                │
+│ (Python 기초    │  │  DevSecOps 온프레) │       │ (asyncio 교육용)    │
+│  멀티미디어)    │  └────────┬───────────┘       └─────────────────────┘
+└────────┬────────┘           │
+         │                    │ 선수
+         ▼                    ▼
+┌─────────────────┐  ┌────────────────────────────────────────────────────┐
+│ python-         │  │           2단계: 인프라 & 클라우드                  │
+│ crawling-lab    │  │                                                     │
+│ (크롤러 +       │  │  docker-class ──→ Kubernetes-Class-Master          │
+│  Qdrant 연동)   │  │                         │                          │
+└────────┬────────┘  │                         ▼                          │
+         │           │             openstack-private-cloud                │
+         │           │             (Ansible + OpenStack)                  │
+         │           │                                                    │
+         │           │  docker-class ──→ AWS-serverless                  │
+         │           │  docker-class ──→ aws-ec2-alb-lab                 │
+         │           └────────────────────────────────────────────────────┘
+         │
+         │     ┌───────────────────────────────────────────┐
+         │     │        3 → 4단계: ML/DL 학습 경로         │
+         │     │                                           │
+         │     │  python-basic-lab                         │
+         │     │       │                                   │
+         │     │       ▼                                   │
+         │     │  py-ml-dl-lab ──→ python-ml-class         │
+         │     │       │                │                  │
+         │     │       └────────┬───────┘                  │
+         │     │                ▼                          │
+         │     │  ai-agent-lab (종합 커리큘럼)             │
+         │     │  Python→전처리→ML/DL→NLP→에이전트         │
+         │     └───────────────────────────────────────────┘
+         │
+         │     ┌───────────────────────────────────────────────────────┐
+         │     │              5단계: LLM & RAG                         │
+         │     │                                                       │
+         │     │  Python-Langchain-Lab ──────────────────────────────┐ │
+         │     │  (LangChain 카탈로그, Ollama/OpenAI 스위칭)          │ │
+         │     │           │                                          │ │
+         │     │           ├──→ aihub-rag                             │ │
+         └─────┼──────────→│   (심리상담·의료·법률 RAG)              │ │
+               │           │                                          │ │
+               │           ├──→ AI-Python-Domain-RAG                 │ │
+               │           │   (의학·고교영어 도메인 RAG)             │ │
+               │           │                                          │ │
+               │           ├──→ education-counsel                    │ │
+               │           │   (학생 진로상담 RAG Chatbot)            │ │
+               │           │                                          │ │
+               │           └──→ ollama-llava-canvas ←────────────────┘ │
+               │               (Ollama LLaVA + 캔버스)                 │
+               └───────────────────────────────────────────────────────┘
+
+     ┌─────────────────────────────────────────────────────────────────────┐
+     │                  6단계: 금융 & 투자 실전                             │
+     │                                                                     │
+     │  investment-analysis ─────────────────────────┐                    │
+     │  (금융 knowledge RAG 기초)                     │                    │
+     │           │                                   │                    │
+     │           ├──→ calflow                        │                    │
+     │           │   (Vue3+Node+Claude AI 투자 일정)  │                    │
+     │           │                                   │                    │
+     │           └──→ lumina-invest ←────────────────┘                    │
+     │               (Neo4j + FastAPI 투자분석 AI)                         │
+     │               ※ 선수: openstack-private-cloud                       │
+     │                                                                     │
+     │  python-crawling-lab ────────────────────────────┐                 │
+     │  python-ml-class     ────────────────────────────┤                 │
+     │                                                  ▼                 │
+     │                                     stock-ML-DL-project            │
+     │                                     (Django+Airflow+Kafka+K8s)     │
+     │                                              │                     │
+     │                                              ▼                     │
+     │  python-ai-basic-lab ──→ stock-coin-trade                          │
+     │  (AI 기초 + 주식 차트)   (Spring Boot 코인 모의투자)                │
+     └─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 학습 경로 (권장 순서)
+
+### 경로 A — 백엔드/풀스택 개발자
+
+```
+edumgt-lab-init → python-basic-lab → docker-class
+  → Kubernetes-Class-Master → aws-ec2-alb-lab
+  → Python-Langchain-Lab → AI-Python-Domain-RAG 또는 education-counsel
+```
+
+### 경로 B — MLOps/데이터 엔지니어
+
+```
+edumgt-lab-init → python-basic-lab → python-crawling-lab
+  → py-ml-dl-lab → python-ml-class
+  → docker-class → Kubernetes-Class-Master
+  → stock-ML-DL-project → ai-agent-lab
+```
+
+### 경로 C — AI/LLM 엔지니어
+
+```
+edumgt-lab-init → python-basic-lab → python-crawling-lab (Qdrant 연동)
+  → Python-Langchain-Lab → aihub-rag → AI-Python-Domain-RAG
+  → ai-agent-lab → education-counsel
+```
+
+### 경로 D — 클라우드/인프라 엔지니어
+
+```
+edumgt-lab-init → docker-class → Kubernetes-Class-Master
+  → openstack-private-cloud → AWS-serverless → aws-ec2-alb-lab
+  → (stock-ML-DL-project 배포 실습)
+```
+
+### 경로 E — 핀테크/금융 AI
+
+```
+edumgt-lab-init → python-basic-lab → python-crawling-lab
+  → python-ml-class → python-ai-basic-lab → investment-analysis
+  → stock-ML-DL-project → stock-coin-trade 또는 lumina-invest 또는 calflow
+```
+
+---
+
+## 명시적 선후 관계
+
+| 프로젝트 | 선수 프로젝트 | 근거 |
+|----------|--------------|------|
+| Kubernetes-Class-Master | docker-class | K8s 실습 전 Docker 컨테이너 이해 필수 |
+| openstack-private-cloud | docker-class | Ansible 실습 환경에 Docker 사용 |
+| lumina-invest | openstack-private-cloud | README에 "선수" 명시 |
+| aws-ec2-alb-lab | docker-class | ECS Fargate = 컨테이너 기반 |
+| AI-Python-Domain-RAG | python-crawling-lab | Qdrant Vector DB 연동 경험 필요 |
+| aihub-rag | python-crawling-lab | 데이터 정규화·Qdrant 구조 이해 필요 |
+| education-counsel | aihub-rag / AI-Python-Domain-RAG | RAG 응용 패턴 이해 후 진행 |
+| stock-ML-DL-project | python-ml-class + Kubernetes-Class-Master | ML 모델 + K8s 배포 병행 |
+| ai-agent-lab | Python-Langchain-Lab | LangChain Agent 기반 커리큘럼 |
+| calflow | investment-analysis | 금융 도메인 지식 기반 앱 |
+
+---
+
+## 기술 스택 분포
+
+| 레이어 | 기술 | 관련 프로젝트 수 |
+|--------|------|-----------------|
+| **프레임워크** | FastAPI | aws-ec2-alb-lab, AI-Python-Domain-RAG, aihub-rag, education-counsel, investment-analysis, lumina-invest, ollama-llava-canvas, python-ai-basic-lab (8개) |
+| **AI/LLM** | LangChain | Python-Langchain-Lab, ai-agent-lab (2개) |
+| **AI/LLM** | Ollama | Python-Langchain-Lab, ollama-llava-canvas (2개) |
+| **Vector DB** | Qdrant | python-crawling-lab, aihub-rag, AI-Python-Domain-RAG, education-counsel, investment-analysis, ai-agent-lab (6개) |
+| **스트리밍** | Kafka | stock-ML-DL-project (1개) |
+| **워크플로** | Airflow | stock-ML-DL-project, calflow (2개) |
+| **클라우드** | AWS | AWS-serverless, aws-ec2-alb-lab (2개) |
+| **프라이빗 클라우드** | OpenStack | openstack-private-cloud (1개) |
+| **Graph DB** | Neo4j | lumina-invest (1개) |
+
+---
+
 # 개발환경 기본 설정
 
 ## 시작 전 개인 준비 요약 (필독)

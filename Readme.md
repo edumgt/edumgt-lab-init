@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
 # edumgt 프로젝트 허브
 
 > **edumgt** 교육 과정에서 운영되는 전체 프로젝트 목록과 상호 연관도입니다.
@@ -6,7 +8,7 @@
 
 ## 프로젝트 목록 (23개)
 
-### 🧱 1단계 — 개발환경 & 기초
+### <i class="fa-solid fa-cube"></i> 1단계 — 개발환경 & 기초
 
 | 저장소 | 설명 | 핵심 기술 |
 |--------|------|-----------|
@@ -16,7 +18,7 @@
 
 ---
 
-### 🐳 2단계 — 인프라 & 클라우드
+### <i class="fa-brands fa-docker"></i> 2단계 — 인프라 & 클라우드
 
 | 저장소 | 설명 | 핵심 기술 |
 |--------|------|-----------|
@@ -28,7 +30,7 @@
 
 ---
 
-### 📊 3단계 — 데이터 수집 & 전처리
+### <i class="fa-solid fa-chart-bar"></i> 3단계 — 데이터 수집 & 전처리
 
 | 저장소 | 설명 | 핵심 기술 |
 |--------|------|-----------|
@@ -36,7 +38,7 @@
 
 ---
 
-### 🤖 4단계 — 머신러닝 & 딥러닝
+### <i class="fa-solid fa-robot"></i> 4단계 — 머신러닝 & 딥러닝
 
 | 저장소 | 설명 | 핵심 기술 |
 |--------|------|-----------|
@@ -46,7 +48,7 @@
 
 ---
 
-### 🦜 5단계 — LLM & RAG
+### <i class="fa-solid fa-feather"></i> 5단계 — LLM & RAG
 
 | 저장소 | 설명 | 핵심 기술 |
 |--------|------|-----------|
@@ -58,7 +60,7 @@
 
 ---
 
-### 📈 6단계 — 금융 & 투자 실전 프로젝트
+### <i class="fa-solid fa-chart-line"></i> 6단계 — 금융 & 투자 실전 프로젝트
 
 | 저장소 | 설명 | 핵심 기술 |
 |--------|------|-----------|
@@ -1648,10 +1650,10 @@ MetalLB IP     = 192.168.253.200 ← 외부(Windows)에서 접근 가능
 | 항목 | Flannel | Calico |
 |------|---------|--------|
 | 설치 복잡도 | 단순 (단일 YAML) | Tigera Operator 방식 |
-| 네트워크 정책 | ❌ 미지원 | ✅ NetworkPolicy 완전 지원 |
+| 네트워크 정책 | <i class="fa-solid fa-circle-xmark"></i> 미지원 | <i class="fa-solid fa-circle-check"></i> NetworkPolicy 완전 지원 |
 | 캡슐화 | VXLAN | VXLAN / BGP / IPinIP 선택 가능 |
 | 성능 | 보통 | 높음 (BGP 모드 시 오버헤드 없음) |
-| 멀티 클러스터 | 제한적 | ✅ BGP 피어링 지원 |
+| 멀티 클러스터 | 제한적 | <i class="fa-solid fa-circle-check"></i> BGP 피어링 지원 |
 | 운영 환경 채택 | 개발/학습 | 프로덕션 표준 |
 
 > **이 스크립트에서는 VXLANCrossSubnet 캡슐화를 사용합니다.**  
@@ -3249,13 +3251,13 @@ code --install-extension Continue.continue
 
 ---
 
-## 📺 관련 유튜브 동영상
+## <i class="fa-solid fa-tv"></i> 관련 유튜브 동영상
 
 아래 링크를 클릭하면 유튜브에서 관련 동영상을 검색할 수 있습니다.
 
-- 🔍 [개발환경 기본 설정 검색](https://www.youtube.com/results?search_query=개발환경+기본+설정)
-- 🔍 [PowerShell 개발환경 구성 검색](https://www.youtube.com/results?search_query=PowerShell+개발환경+구성)
-- 🔍 [WSL2 개발환경 설정 검색](https://www.youtube.com/results?search_query=WSL2+개발환경+설정)
-- 🔍 [Git GitHub 사용법 검색](https://www.youtube.com/results?search_query=Git+GitHub+사용법)
-- 🔍 [Node.js Python Java 개발환경 검색](https://www.youtube.com/results?search_query=Node.js+Python+Java+개발환경)
-- 🔍 [GitHub Copilot AI 코딩 검색](https://www.youtube.com/results?search_query=GitHub+Copilot+AI+코딩)
+- <i class="fa-solid fa-magnifying-glass"></i> [개발환경 기본 설정 검색](https://www.youtube.com/results?search_query=개발환경+기본+설정)
+- <i class="fa-solid fa-magnifying-glass"></i> [PowerShell 개발환경 구성 검색](https://www.youtube.com/results?search_query=PowerShell+개발환경+구성)
+- <i class="fa-solid fa-magnifying-glass"></i> [WSL2 개발환경 설정 검색](https://www.youtube.com/results?search_query=WSL2+개발환경+설정)
+- <i class="fa-solid fa-magnifying-glass"></i> [Git GitHub 사용법 검색](https://www.youtube.com/results?search_query=Git+GitHub+사용법)
+- <i class="fa-solid fa-magnifying-glass"></i> [Node.js Python Java 개발환경 검색](https://www.youtube.com/results?search_query=Node.js+Python+Java+개발환경)
+- <i class="fa-solid fa-magnifying-glass"></i> [GitHub Copilot AI 코딩 검색](https://www.youtube.com/results?search_query=GitHub+Copilot+AI+코딩)

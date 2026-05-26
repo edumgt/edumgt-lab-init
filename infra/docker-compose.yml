@@ -72,11 +72,46 @@ services:
     networks:
       - shared-net
 
+  playwright:
+    build:
+      context: ./playwright
+      dockerfile: Dockerfile
+    container_name: playwright
+    restart: unless-stopped
+    volumes:
+      - playwright_captures:/app/captures
+    networks:
+      - shared-net
+
+  crypto-mock-db:
+    image: mariadb:11.4
+    container_name: crypto-mock-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root123456
+      MARIADB_DATABASE: mockinv
+      MARIADB_USER: mockinv
+      MARIADB_PASSWORD: mockinv1234
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-uroot", "-proot123456"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./init-mariadb.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - shared-net
+
 volumes:
   mongo_data:
   redis_data:
   postgres_data:
   qdrant_data:
+  mariadb_data:
+  playwright_captures:
 
 networks:
   shared-net:

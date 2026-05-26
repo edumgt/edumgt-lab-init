@@ -333,6 +333,8 @@ Get-CimInstance -ClassName Win32_Processor |
 (Get-CimInstance Win32_Processor).Name
 ```
 
+---
+
 예상 출력 예시:
 ```
 Name                                       NumberOfCores NumberOfLogicalProcessors MaxClockSpeed
@@ -553,6 +555,92 @@ net use Z: /delete
         [PSCustomObject]@{ IP = $ip; Status = "응답함" }
     }
 } | Format-Table -AutoSize
+
+---
+
+# PowerShell IP 스캔 스크립트 정리
+
+## 문제 원인
+
+`-TimeoutSeconds` 파라미터는 PowerShell 6+에서만 지원됩니다.\
+Windows PowerShell 5.x에서는 사용할 수 없습니다.
+
+------------------------------------------------------------------------
+
+## 해결 방법 1 (기본)
+
+``` powershell
+1..254 | ForEach-Object {
+    $ip = "192.168.1.$_"
+    if (Test-Connection -ComputerName $ip -Count 1 -Quiet) {
+        [PSCustomObject]@{ IP = $ip; Status = "응답함" }
+    }
+} | Format-Table -AutoSize
+```
+
+단점: 기본 타임아웃이라 속도가 느릴 수 있음
+
+------------------------------------------------------------------------
+
+## 해결 방법 2 (추천)
+
+``` powershell
+1..254 | ForEach-Object {
+    $ip = "192.168.1.$_"
+    if (Test-Connection -ComputerName $ip -Count 1 -Quiet -TimeoutMilliseconds 500) {
+        [PSCustomObject]@{ IP = $ip; Status = "응답함" }
+    }
+} | Format-Table -AutoSize
+```
+
+장점: 속도 개선
+
+------------------------------------------------------------------------
+
+## 해결 방법 3 (.NET Ping 사용 - 빠름)
+
+``` powershell
+1..254 | ForEach-Object {
+    $ip = "192.168.1.$_"
+    $ping = New-Object System.Net.NetworkInformation.Ping
+    try {
+        if ($ping.Send($ip, 300).Status -eq "Success") {
+            [PSCustomObject]@{ IP = $ip; Status = "응답함" }
+        }
+    } catch {}
+} | Format-Table -AutoSize
+```
+
+장점: 가장 빠른 방식
+
+------------------------------------------------------------------------
+
+## PowerShell 7 이상 (병렬 처리)
+
+``` powershell
+1..254 | ForEach-Object -Parallel {
+    $ip = "192.168.1.$_"
+    if (Test-Connection -ComputerName $ip -Count 1 -Quiet -TimeoutSeconds 1) {
+        [PSCustomObject]@{ IP = $ip; Status = "응답함" }
+    }
+} -ThrottleLimit 50
+```
+
+장점: 초고속 병렬 스캔
+
+------------------------------------------------------------------------
+
+## 정리
+
+  방법                   속도        권장
+  ---------------------- ----------- ---------
+  기본 Test-Connection   느림        ❌
+  TimeoutMilliseconds    보통        ✅
+  .NET Ping              빠름        ⭐ 추천
+  병렬 (PS7)             매우 빠름   🚀 최고
+
+
+---
 
 # 특정 팀원 PC IP로 Ping 테스트
 Test-Connection -ComputerName 192.168.1.100 -Count 4

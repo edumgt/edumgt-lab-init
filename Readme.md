@@ -701,6 +701,8 @@ Remove-NetFirewallRule -DisplayName "DevServer 8080"
 | 방화벽 허용 | 인바운드 규칙 추가 | `New-NetFirewallRule -LocalPort 8080 -Action Allow` |
 | 개발 서버 공유 | 0.0.0.0 바인딩 | `uvicorn main:app --host 0.0.0.0 --port 8000` |
 
+
+
 ---
 
 ## 1) WSL 환경 구축 (Windows 사용자)

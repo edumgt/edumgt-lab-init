@@ -1,32 +1,60 @@
-services:
-  mongo:
-    image: mongo:7
-    container_name: mongo
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    networks:
-      - shared-net
+# ═══════════════════════════════════════════════════════════════
+# Local Dev Infrastructure — Docker Compose
+#
+# 프로필별 실행:
+#   core only        : docker compose up -d
+#   + AI/ML          : docker compose --profile ai up -d
+#   + Kafka/NiFi     : docker compose --profile streaming up -d
+#   + Neo4j          : docker compose --profile graph up -d
+#   + Prometheus/Grafana : docker compose --profile monitoring up -d
+#   전체             : docker compose --profile ai --profile streaming --profile graph --profile monitoring up -d
+#
+# 포트 정리:
+#   PostgreSQL  5432  │  MongoDB    27017  │  MariaDB  3306
+#   Redis       6379  │  Qdrant  6333-6334 │
+#   Ollama     11435  │  Kafka       9092  │  Kafka UI 8989
+#   NiFi        8443  │  Neo4j  7474/7687  │
+#   Prometheus  9090  │  Grafana     3000  │
+# ═══════════════════════════════════════════════════════════════
 
-  redis:
-    image: redis:7
-    container_name: redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-    networks:
-      - shared-net
+networks:
+  shared-net:
+    name: shared-net
+    driver: bridge
+  kafka-net:
+    name: kafka-net
+    driver: bridge
+  monitoring:
+    name: monitoring
+    driver: bridge
+
+volumes:
+  # Core DB
+  postgres_data:
+  redis_data:
+  mongo_data:
+  mariadb_data:
+  # Vector DB
+  qdrant_data:
+  # AI
+  playwright_captures:
+  # Graph
+  neo4j_data:
+  # Streaming
+  zookeeper-data:
+  zookeeper-logs:
+  kafka-data:
+  nifi-data:
+  nifi-logs:
+  # Monitoring
+  prometheus_data:
+  grafana_data:
+
+services:
+
+  # ───────────────────────────────────────────────────────────────
+  # CORE — 기본 실행 (프로필 없음)
+  # ───────────────────────────────────────────────────────────────
 
   postgres:
     image: pgvector/pgvector:pg16
@@ -49,14 +77,37 @@ services:
     networks:
       - shared-net
 
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - shared-net
+
+  mongo:
+    image: mongo:7
+    container_name: mongo
     restart: unless-stopped
     volumes:
-      - /mnt/c/Users/1/.ollama:/root/.ollama
+      - mongo_data:/data/db
     ports:
-      - "11435:11434"
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     networks:
       - shared-net
 
@@ -64,22 +115,11 @@ services:
     image: qdrant/qdrant:latest
     container_name: qdrant
     restart: unless-stopped
+    volumes:
+      - qdrant_data:/qdrant/storage
     ports:
       - "6333:6333"
       - "6334:6334"
-    volumes:
-      - qdrant_data:/qdrant/storage
-    networks:
-      - shared-net
-
-  playwright:
-    build:
-      context: ./playwright
-      dockerfile: Dockerfile
-    container_name: playwright
-    restart: unless-stopped
-    volumes:
-      - playwright_captures:/app/captures
     networks:
       - shared-net
 
@@ -92,6 +132,9 @@ services:
       MARIADB_DATABASE: mockinv
       MARIADB_USER: mockinv
       MARIADB_PASSWORD: mockinv1234
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./init-mariadb.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     ports:
       - "3306:3306"
     healthcheck:
@@ -99,21 +142,248 @@ services:
       interval: 5s
       timeout: 3s
       retries: 30
-    volumes:
-      - mariadb_data:/var/lib/mysql
-      - ./init-mariadb.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     networks:
       - shared-net
 
-volumes:
-  mongo_data:
-  redis_data:
-  postgres_data:
-  qdrant_data:
-  mariadb_data:
-  playwright_captures:
+  # ───────────────────────────────────────────────────────────────
+  # AI PROFILE — Ollama LLM 서버 + Playwright 자동화
+  # docker compose --profile ai up -d
+  # ───────────────────────────────────────────────────────────────
 
-networks:
-  shared-net:
-    name: shared-net
-    driver: bridge
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    profiles: ["ai"]
+    volumes:
+      - /mnt/c/Users/1/.ollama:/root/.ollama
+    ports:
+      - "11435:11434"
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+    networks:
+      - shared-net
+
+  playwright:
+    build:
+      context: ./playwright
+      dockerfile: Dockerfile
+    container_name: playwright
+    restart: unless-stopped
+    profiles: ["ai"]
+    volumes:
+      - playwright_captures:/app/captures
+    networks:
+      - shared-net
+
+  # ───────────────────────────────────────────────────────────────
+  # STREAMING PROFILE — Kafka + NiFi ETL 파이프라인
+  # docker compose --profile streaming up -d
+  #
+  # 접속:
+  #   Kafka UI : http://localhost:8989
+  #   NiFi     : https://localhost:8443/nifi  (admin / adminpassword12345)
+  # ───────────────────────────────────────────────────────────────
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    container_name: zookeeper
+    restart: unless-stopped
+    profiles: ["streaming"]
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-logs:/var/lib/zookeeper/log
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo ruok | nc localhost 2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kafka-net
+      - shared-net
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    restart: unless-stopped
+    profiles: ["streaming"]
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_NUM_PARTITIONS: 6
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_LOG_RETENTION_HOURS: 24
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
+      KAFKA_COMPRESSION_TYPE: lz4
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - kafka-net
+      - shared-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    restart: unless-stopped
+    profiles: ["streaming"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      DYNAMIC_CONFIG_ENABLED: "true"
+      AUTH_TYPE: DISABLED
+    ports:
+      - "8989:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+    networks:
+      - kafka-net
+
+  nifi:
+    image: apache/nifi:1.27.0
+    container_name: nifi
+    restart: unless-stopped
+    profiles: ["streaming"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      NIFI_WEB_HTTPS_PORT: 8443
+      NIFI_WEB_HTTP_PORT: ""
+      SINGLE_USER_CREDENTIALS_USERNAME: admin
+      SINGLE_USER_CREDENTIALS_PASSWORD: adminpassword12345
+      NIFI_SENSITIVE_PROPS_KEY: nifi-sensitive-props-key-dev
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    volumes:
+      - nifi-data:/opt/nifi/nifi-current/conf
+      - nifi-logs:/opt/nifi/nifi-current/logs
+    ports:
+      - "8443:8443"
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:8443/nifi-api/system-diagnostics"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 90s
+    networks:
+      - kafka-net
+      - shared-net
+
+  # ───────────────────────────────────────────────────────────────
+  # GRAPH PROFILE — Neo4j 그래프 데이터베이스
+  # docker compose --profile graph up -d
+  #
+  # 접속:
+  #   Browser : http://localhost:7474  (neo4j / neo4j123)
+  #   Bolt    : bolt://localhost:7687
+  # ───────────────────────────────────────────────────────────────
+
+  neo4j:
+    image: neo4j:5.18-community
+    container_name: neo4j
+    restart: unless-stopped
+    profiles: ["graph"]
+    environment:
+      NEO4J_AUTH: neo4j/neo4j123
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: apoc.*
+      NEO4J_dbms_memory_heap_initial__size: 512m
+      NEO4J_dbms_memory_heap_max__size: 1G
+    volumes:
+      - neo4j_data:/data
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:7474"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - shared-net
+
+  # ───────────────────────────────────────────────────────────────
+  # MONITORING PROFILE — Prometheus + Grafana
+  # docker compose --profile monitoring up -d
+  #
+  # 접속:
+  #   Prometheus : http://localhost:9090
+  #   Grafana    : http://localhost:3000  (admin / admin)
+  # ───────────────────────────────────────────────────────────────
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: prometheus
+    restart: unless-stopped
+    profiles: ["monitoring"]
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.enable-lifecycle"
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+      - shared-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    profiles: ["monitoring"]
+    depends_on:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_SERVER_ROOT_URL: http://localhost:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - monitoring

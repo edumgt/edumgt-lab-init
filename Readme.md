@@ -1002,6 +1002,147 @@ def test_add():
 
 ---
 
+## 2-1) Google Antigravity — Python Easter Egg
+
+### 개요
+
+`import antigravity`는 Python에 내장된 이스터 에그(Easter Egg)입니다.  
+Python 2.7부터 표준 라이브러리에 포함되어 있으며, 실행하면 기본 브라우저가 열리고 유명한 xkcd 만화 [#353 — Python](https://xkcd.com/353/)으로 이동합니다.
+
+만화의 핵심 메시지: *"파이썬을 배우면 마치 하늘을 날 수 있는 것처럼 느껴진다."*
+
+### 별도 설치 없음
+
+Python 설치 시 자동으로 포함됩니다. 추가 패키지 설치가 필요 없습니다.
+
+### 실행 방법
+
+```bash
+python -c "import antigravity"
+```
+
+또는 Python 대화형 셸에서:
+
+```python
+>>> import antigravity
+```
+
+실행 시 기본 브라우저가 자동으로 열리고 아래 URL로 이동합니다:
+
+```
+https://xkcd.com/353/
+```
+
+### antigravity 모듈 소스 확인
+
+```python
+import antigravity, inspect
+print(inspect.getsource(antigravity))
+```
+
+예상 출력 (핵심 부분):
+
+```python
+import webbrowser
+import hashlib
+
+webbrowser.open("https://xkcd.com/353/")
+
+def geohash(latitude, longitude, datedow):
+    '''Compute geohash() using the Munroe algorithm.
+    https://xkcd.com/426/
+    '''
+    h = hashlib.md5(datedow).digest()
+    ...
+```
+
+> **참고**: 모듈 안에는 xkcd 위치 해시 알고리즘(`geohash`)도 숨어 있습니다.
+
+### 학습 포인트
+
+| 항목 | 설명 |
+|------|------|
+| `webbrowser` 모듈 | Python 표준 라이브러리 — OS 기본 브라우저 제어 |
+| `hashlib` 모듈 | MD5 등 해시 알고리즘 제공 |
+| Easter Egg 전통 | Python 커뮤니티의 유머 코드 관행 |
+
+### 다른 Python Easter Egg
+
+```python
+import this        # The Zen of Python (파이썬 설계 철학 19가지)
+import __hello__   # "Hello world!" 출력
+```
+
+### 공식 참고
+- xkcd #353: https://xkcd.com/353/
+- CPython 소스: https://github.com/python/cpython/blob/main/Lib/antigravity.py
+
+---
+
+## 2-2) Google Colab (가장 추천)
+
+> **설치 없이 1초 만에 Python을 시작할 수 있는 가장 쉬운 방법입니다.**
+
+Google에서 제공하는 무료 클라우드 기반 서비스로, 웹 브라우저만 있으면 별도의 설치 없이 바로 Python Notebook을 실행할 수 있습니다.
+
+### 장점
+
+| 항목 | 내용 |
+|------|------|
+| 비용 | 구글 계정만 있으면 100% 무료 |
+| 성능 | 컴퓨터 성능과 무관하게 구글 서버를 사용 (무료 GPU 제공) |
+| 저장/공유 | 구글 드라이브와 연동되어 저장 및 공유가 매우 쉬움 |
+| 설치 | 별도 설치 불필요 — 브라우저만 있으면 즉시 시작 |
+
+### 시작하는 방법
+
+1. 웹 브라우저에서 **Google Colab** 에 접속합니다.
+   - https://colab.research.google.com
+2. 구글 계정으로 로그인합니다.
+3. **새 노트** 를 클릭하면 즉시 Python 코드를 작성하고 실행할 수 있습니다.
+
+### 기본 사용 예시
+
+```python
+# 셀에 입력 후 Shift+Enter 로 실행
+print("Hello, Google Colab!")
+
+# 패키지 설치 (셀에서 직접 실행)
+!pip install requests
+
+# 구글 드라이브 마운트
+from google.colab import drive
+drive.mount('/content/drive')
+```
+
+### import antigravity 실행해보기
+
+Colab에서도 Python Easter Egg를 바로 실행할 수 있습니다:
+
+```python
+import antigravity
+```
+
+> Colab 환경에서는 브라우저 팝업 차단으로 인해 새 탭이 열리지 않을 수 있으며, 이는 정상적인 동작입니다.
+
+### 무료 GPU 사용 방법
+
+1. 상단 메뉴 → **런타임** → **런타임 유형 변경**
+2. 하드웨어 가속기: **T4 GPU** 선택
+3. **저장** 클릭 후 런타임이 재시작되면 GPU 사용 가능
+
+```python
+# GPU 사용 확인
+import torch
+print(torch.cuda.is_available())   # True 이면 GPU 사용 중
+```
+
+### 공식 사이트
+- https://colab.research.google.com
+- https://colab.research.google.com/notebooks/intro.ipynb (튜토리얼)
+
+---
+
 ## 3) Node.js 다운로드 및 환경 구축
 
 ### 설치 순서
@@ -1062,89 +1203,24 @@ docker run hello-world
 
 ---
 
-## 5) Java (OpenJDK) 설치 및 환경 변수 설정 (Windows)
+## 5) Java (OpenJDK) 설치 (요약)
 
-### 설치 목적
-- Java 애플리케이션 빌드·실행을 위한 JDK 설치
-- `JAVA_HOME` 환경 변수 등록으로 Maven, IDE 등 다른 도구에서 JDK를 자동 인식
+> 상세 설치 가이드는 문서 맨 아래 **[부록: Java OpenJDK 상세 설치 가이드](#부록-java-openjdk-상세-설치-가이드-windows)** 를 참조하세요.
 
-### 5-1) jdk.java.net 접속 및 다운로드
+### 빠른 설치 요약
 
-1. 브라우저에서 아래 주소 접속
-   - https://jdk.java.net/17/
-2. **RI Binary** 섹션의 **Windows 11 x64 Java Development Kit** 링크 클릭하여 `.zip` 파일 다운로드
-
-### 공식 사이트
-- https://jdk.java.net/ (OpenJDK Reference Implementation)
-
-![jdk.java.net Java SE 17 다운로드 페이지](images/image.png)
-
----
-
-### 5-2) zip 파일 압축 해제
-
-1. 다운로드된 OpenJDK 17 zip 파일(예: `openjdk-17.x.x_windows-x64_bin.zip`)을 압축 해제 도구로 열기
-2. 내부 `jdk-17.x.x` 폴더 확인 (bin, conf, include, jmods, legal, lib, release 포함)
-
-![OpenJDK zip 압축 해제](images/image-1.png)
-
----
-
-### 5-3) JDK 폴더를 C:\jdk17 로 이동
-
-1. 압축 해제된 JDK 폴더를 `C:\jdk17` 이름으로 이동 또는 복사
-2. Windows 탐색기에서 `C:\jdk17` 폴더가 생성된 것 확인
-
-![C:\jdk17 폴더 생성 확인](images/image-2.png)
-
----
-
-### 5-4) 시스템 > 정보 > 고급 시스템 설정 열기
-
-1. **Windows 설정** → **시스템** → **정보** 이동
-2. 우측 하단 **고급 시스템 설정** 링크 클릭
-
-![Windows 시스템 정보 화면](images/image-3.png)
-
----
-
-### 5-5) 환경 변수(JAVA_HOME) 설정
-
-1. **시스템 속성** 창 → **고급** 탭 → **환경 변수(N)...** 버튼 클릭
-2. **시스템 변수** 영역에서 **새로 만들기(W)...** 클릭
-   - 변수 이름: `JAVA_HOME`
-   - 변수 값: `C:\jdk17`
-3. 기존 `Path` 시스템 변수를 선택 → **편집(I)...** 클릭 → `%JAVA_HOME%\bin` 추가
-4. **확인** 클릭하여 저장
-
-![환경 변수 설정 창 - 사용자 변수 JAVA_HOME](images/image-4.png)
-
----
-
-### 5-6) 사용자 변수에서 JAVA_HOME 확인
-
-환경 변수 창에서 **사용자 변수(U)** 목록에 `JAVA_HOME = C:\jdk17` (또는 설정한 경로)가 등록되었는지 확인합니다.
-
-![사용자 변수 JAVA_HOME 확인](images/image-5.png)
-
----
-
-### 5-7) 시스템 변수에서 JAVA_HOME 확인
-
-**시스템 변수(S)** 목록에도 `JAVA_HOME` 이 등록되어 있는지 확인합니다.
-
-![시스템 변수 JAVA_HOME 확인](images/image-6.png)
-
----
-
-### 5-8) 설치 확인
-
-새 PowerShell 또는 명령 프롬프트를 열어 아래 명령어로 버전을 확인합니다.
+1. https://jdk.java.net/17/ 에서 Windows용 `.zip` 파일 다운로드
+2. 압축 해제 후 `C:\jdk17` 경로로 이동
+3. 시스템 환경 변수에 `JAVA_HOME=C:\jdk17` 추가, `Path`에 `%JAVA_HOME%\bin` 추가
+4. 새 터미널에서 설치 확인
 
 ```bash
 java --version
 javac --version
 ```
+
+### 공식 사이트
+- https://jdk.java.net/ (OpenJDK Reference Implementation)
 
 ---
 
@@ -1579,31 +1655,6 @@ ipconfig /all
 > **참고**: 위 IP 주소는 소프트웨어 설치 시 자동으로 할당되며 환경에 따라 다를 수 있습니다.
 
 ---
-
-## 이 저장소 실행 방법
-
-### 1. 저장소 클론
-```bash
-git clone https://github.com/edumgt/java-education-001.git
-cd java-education-001
-```
-
-### 2. Java 버전 확인
-```bash
-java --version
-```
-
-### 3. Maven 빌드
-```bash
-mvn clean package
-```
-
-### 기술 스택
-- **Language**: Java 17+
-- **Build Tool**: Maven
-- **Logging**: Log4j2
-- **IDE/Editor**: VS Code
-- **Version Control**: Git + GitHub
 
 ---
 
@@ -3351,3 +3402,122 @@ code --install-extension Continue.continue
 - <i class="fa-solid fa-magnifying-glass"></i> [Git GitHub 사용법 검색](https://www.youtube.com/results?search_query=Git+GitHub+사용법)
 - <i class="fa-solid fa-magnifying-glass"></i> [Node.js Python Java 개발환경 검색](https://www.youtube.com/results?search_query=Node.js+Python+Java+개발환경)
 - <i class="fa-solid fa-magnifying-glass"></i> [GitHub Copilot AI 코딩 검색](https://www.youtube.com/results?search_query=GitHub+Copilot+AI+코딩)
+
+---
+
+## 부록: Java OpenJDK 상세 설치 가이드 (Windows)
+
+### 설치 목적
+- Java 애플리케이션 빌드·실행을 위한 JDK 설치
+- `JAVA_HOME` 환경 변수 등록으로 Maven, IDE 등 다른 도구에서 JDK를 자동 인식
+
+### A-1) jdk.java.net 접속 및 다운로드
+
+1. 브라우저에서 아래 주소 접속
+   - https://jdk.java.net/17/
+2. **RI Binary** 섹션의 **Windows 11 x64 Java Development Kit** 링크 클릭하여 `.zip` 파일 다운로드
+
+### 공식 사이트
+- https://jdk.java.net/ (OpenJDK Reference Implementation)
+
+![jdk.java.net Java SE 17 다운로드 페이지](images/image.png)
+
+---
+
+### A-2) zip 파일 압축 해제
+
+1. 다운로드된 OpenJDK 17 zip 파일(예: `openjdk-17.x.x_windows-x64_bin.zip`)을 압축 해제 도구로 열기
+2. 내부 `jdk-17.x.x` 폴더 확인 (bin, conf, include, jmods, legal, lib, release 포함)
+
+![OpenJDK zip 압축 해제](images/image-1.png)
+
+---
+
+### A-3) JDK 폴더를 C:\jdk17 로 이동
+
+1. 압축 해제된 JDK 폴더를 `C:\jdk17` 이름으로 이동 또는 복사
+2. Windows 탐색기에서 `C:\jdk17` 폴더가 생성된 것 확인
+
+![C:\jdk17 폴더 생성 확인](images/image-2.png)
+
+---
+
+### A-4) 시스템 > 정보 > 고급 시스템 설정 열기
+
+1. **Windows 설정** → **시스템** → **정보** 이동
+2. 우측 하단 **고급 시스템 설정** 링크 클릭
+
+![Windows 시스템 정보 화면](images/image-3.png)
+
+---
+
+### A-5) 환경 변수(JAVA_HOME) 설정
+
+1. **시스템 속성** 창 → **고급** 탭 → **환경 변수(N)...** 버튼 클릭
+2. **시스템 변수** 영역에서 **새로 만들기(W)...** 클릭
+   - 변수 이름: `JAVA_HOME`
+   - 변수 값: `C:\jdk17`
+3. 기존 `Path` 시스템 변수를 선택 → **편집(I)...** 클릭 → `%JAVA_HOME%\bin` 추가
+4. **확인** 클릭하여 저장
+
+![환경 변수 설정 창 - 사용자 변수 JAVA_HOME](images/image-4.png)
+
+---
+
+### A-6) 사용자 변수에서 JAVA_HOME 확인
+
+환경 변수 창에서 **사용자 변수(U)** 목록에 `JAVA_HOME = C:\jdk17` (또는 설정한 경로)가 등록되었는지 확인합니다.
+
+![사용자 변수 JAVA_HOME 확인](images/image-5.png)
+
+---
+
+### A-7) 시스템 변수에서 JAVA_HOME 확인
+
+**시스템 변수(S)** 목록에도 `JAVA_HOME` 이 등록되어 있는지 확인합니다.
+
+![시스템 변수 JAVA_HOME 확인](images/image-6.png)
+
+---
+
+### A-8) 설치 확인
+
+새 PowerShell 또는 명령 프롬프트를 열어 아래 명령어로 버전을 확인합니다.
+
+```bash
+java --version
+javac --version
+```
+
+---
+
+## 부록: Java 프로젝트 (lab03-java-app) 실행 방법
+
+### 1. 저장소 클론
+
+```bash
+git clone https://github.com/edumgt/java-education-001.git
+cd java-education-001
+```
+
+### 2. Java 버전 확인
+
+```bash
+java --version
+```
+
+### 3. Maven 빌드
+
+```bash
+mvn clean package
+```
+
+### 기술 스택
+
+| 구성 요소 | 상세 |
+|-----------|------|
+| Language | Java 17+ |
+| Build Tool | Maven |
+| Logging | Log4j2 |
+| IDE/Editor | VS Code |
+| Version Control | Git + GitHub |

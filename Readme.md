@@ -6,7 +6,7 @@
 
 ---
 
-## 프로젝트 목록 (23개)
+## 프로젝트 목록 (40개)
 
 ### <i class="fa-solid fa-cube"></i> 1단계 — 개발환경 & 기초
 
@@ -23,10 +23,17 @@
 | 저장소 | 설명 | 핵심 기술 |
 |--------|------|-----------|
 | **docker-class** | Docker 기초~심화 20개 Lab + Jenkins·GitLab·SonarQube·Nexus·Drone 온프레미스 DevSecOps | Docker, Jenkins, GitLab CE, SonarQube, Nexus |
-| **Kubernetes-Class-Master** | K8s 아키텍처 → Pod/RS/Deployment → HPA → Ingress 단계별 실습 (VMware/VirtualBox) | kubeadm, kubectl, Calico, MetalLB, NGINX Ingress |
+| **kubernetes-lab** | K8s 아키텍처 → Pod/RS/Deployment → HPA → Ingress 단계별 실습 (VMware/VirtualBox) | kubeadm, kubectl, Calico, MetalLB, NGINX Ingress |
+| **k8s-jupyter-lab** | Kubernetes 기반 사용자별 JupyterLab 세션 + Harbor·Nexus 포함 데이터 플랫폼 OVA | kubeadm, JupyterLab, Harbor, Nexus, MetalLB, Kustomize |
 | **openstack-private-cloud** | Ansible 기반 OpenStack 프라이빗 클라우드 구축 (Keystone/Glance/Nova/Neutron/Cinder) | Ansible, OpenStack, Ubuntu |
-| **AWS-serverless** | AWS Lambda + API Gateway 서버리스 실습 (Node.js·Python·Java, CLI/콘솔 양방향) | AWS Lambda, API Gateway, Serverless Framework |
 | **aws-ec2-alb-lab** | AWS 계정 보안 설정 → EC2/VPC/ALB → Auto Scaling → ECS Fargate 배포까지 Lab | AWS EC2, ALB, ECS Fargate, FastAPI |
+| **aws-serverless** | AWS Lambda + API Gateway 서버리스 실습 (Node.js·Python·Java, CLI/콘솔 양방향) | AWS Lambda, API Gateway, Serverless Framework |
+| **aws-eks-lab** | AWS EKS 이중 클러스터 구성 → ECR 이미지 빌드 → ALB Ingress 실전 운영 | AWS EKS, eksctl, ECR, ALB Ingress, MariaDB |
+| **aws-polly** | Amazon Polly TTS 실습 — FastAPI + S3 Presigned URL + Lambda 서버리스 배포 | Amazon Polly, S3, Lambda, boto3, FastAPI |
+| **aws-rekognition** | AWS Rekognition 얼굴/이미지 분석 + Lambda 자동화 (Node.js 11챕터 커리큘럼) | AWS Rekognition, Lambda, S3, Node.js |
+| **aws-sqs-sns** | AWS SQS·SNS 메시지 큐·알림 실습 + ElastiCache Cache-Aside 예제 | AWS SQS, SNS, ElastiCache, boto3 |
+| **aws-transcribe** | Amazon Transcribe 음성→텍스트 실습 + SRT/VTT 자막 변환 (Node.js SDK v3) | AWS Transcribe, S3, Node.js AWS SDK v3 |
+| **chatbot-app** | Amazon Lex V2 + Lambda Fulfillment 예약 챗봇 + Node.js Express API 연동 | Amazon Lex V2, Lambda, Node.js, Express |
 
 ---
 
@@ -35,6 +42,7 @@
 | 저장소 | 설명 | 핵심 기술 |
 |--------|------|-----------|
 | **python-crawling-lab** | 네이버/다음 금융·KRX ETF 크롤러 + Qdrant Vector DB 연동 실습 | Python, BeautifulSoup, Qdrant, OpenSanctions |
+| **py-util** | DART·KOSIS·통계청 기업 공시 데이터 수집 크롤링 유틸리티 스크립트 모음 | Python, requests, BeautifulSoup, DART API |
 
 ---
 
@@ -52,11 +60,15 @@
 
 | 저장소 | 설명 | 핵심 기술 |
 |--------|------|-----------|
-| **Python-Langchain-Lab** | LangChain 기능 카탈로그 (LCEL·RAG·Agent·VectorStore, Ollama/OpenAI 스위칭) | LangChain, Ollama, OpenAI, Qdrant, Langfuse |
+| **langchain-lab** | LangChain 기능 카탈로그 최신판 (LCEL·RAG·Agent·VectorStore, Ollama/OpenAI 스위칭) | LangChain, Ollama, OpenAI, Qdrant, LangSmith |
+| **Python-Langchain-Lab** | LangChain 기능 카탈로그 (Langfuse 모니터링 연동 포함) | LangChain, Ollama, OpenAI, Qdrant, Langfuse |
 | **aihub-rag** | AI Hub 데이터 기반 심리상담·의료·법률 도메인 RAG + 자동평가 (반응형 웹 UI) | FastAPI, Qdrant, HuggingFace, Docker |
 | **AI-Python-Domain-RAG** | 의학·고교영어 도메인 특화 RAG 에이전트 (Tool Calling + Streamlit UI) | FastAPI, Qdrant, PostgreSQL, Redis, vLLM, Streamlit |
 | **education-counsel** | 학생 진로탐색 AI 상담 시스템 (RAG Chatbot, FastAPI + 반응형 웹) | FastAPI, MongoDB, Qdrant, Docker |
 | **ollama-llava-canvas** | Ollama LLaVA 기반 캔버스 드로잉 + AI 이미지 향상 (FastAPI + HTML5 Canvas) | Ollama, LLaVA, FastAPI, SQLite |
+| **meeting-agent** | 회의 녹음 → STT 전사 → 회의록 리포트 자동 생성 (브라우저 녹음 + FastAPI) | FastAPI, OpenAI Whisper, ffmpeg, Node.js |
+| **whisper-agent** | 멀티모달 상담 데이터 분석 + 벡터 검색 기반 RAG 리포트 생성 + PDF 다운로드 | FastAPI, ChromaDB, OpenAI, Ollama, Tailwind |
+| **ocr-webapp** | Tesseract OCR + AI 보완 웹앱 — Nginx 프론트 + FastAPI 백엔드 + 관리자 대시보드 | FastAPI, Tesseract 5, Nginx, Ollama, Docker |
 
 ---
 
@@ -69,7 +81,19 @@
 | **stock-ML-DL-project** | 주식 ML/DL 전체 파이프라인 (Django+Airflow+Kafka+Flask+K8s 배포) | Django, Airflow, Kafka, Flask, K8s, Docker |
 | **stock-coin-trade** | 한국 4대 코인거래소 시세 + Spring Boot 모의투자 웹앱 (Java) | Spring Boot, Thymeleaf, Tailwind CSS, PostgreSQL |
 | **lumina-invest** | 투자 분석 AI 웹앱 (Neo4j 그래프 + FastAPI + 대화관리) ← **선수: openstack-private-cloud** | FastAPI, Neo4j, Qdrant, Docker |
-| **calflow** | AI 기반 개인 투자 일정 관리 앱 (InvestFlow) — Vue3 + Node.js + Claude AI | Vue 3, Node.js, PostgreSQL, Claude AI, Airflow |
+| **invest-flow** | AI 기반 개인 투자 일정 관리 웹앱 — Vue 3 + Node.js + Claude AI + 투자 캘린더 | Vue 3, Node.js, PostgreSQL, Claude AI |
+
+---
+
+### <i class="fa-solid fa-layer-group"></i> 7단계 — 풀스택 & 서비스 개발
+
+| 저장소 | 설명 | 핵심 기술 |
+|--------|------|-----------|
+| **springboot-lab** | Spring Boot 3 기반 온라인 시험 플랫폼 MSA (Spring Cloud Gateway + 8개 마이크로서비스) | Spring Boot 3, Spring Cloud Gateway, PostgreSQL, Redis, Kafka |
+| **platform-backoffice** | Spring MVC 기반 Java 관리자 백오피스 플랫폼 (WAR 배포, MyBatis + JSP) | Spring MVC 4, MyBatis, JSP, Tomcat, Java 17 |
+| **fe-vanilla** | AI 기반 관리자 모드 SaaS/PaaS 데모 — Vanilla JS + FastAPI, 동영상 AI 판별 포함 | FastAPI, Vanilla JS, Docker |
+| **webrtc-app** | Vue 3 기반 협업형 WebRTC 화상통화 앱 + 운영 대시보드 (Docker Compose) | Vue 3, Vite, WebRTC, Tailwind CSS, Node.js |
+| **inquiry-saas** | 한국 내륙 물류 견적 + 알바·용역 인력 수발주 통합 멀티 SaaS 플랫폼 | FastAPI, PostgreSQL, Docker |
 
 ---
 
@@ -93,18 +117,20 @@
 └────────┬────────┘           │
          │                    │ 선수
          ▼                    ▼
-┌─────────────────┐  ┌────────────────────────────────────────────────────┐
-│ python-         │  │           2단계: 인프라 & 클라우드                  │
-│ crawling-lab    │  │                                                     │
-│ (크롤러 +       │  │  docker-class ──→ Kubernetes-Class-Master          │
-│  Qdrant 연동)   │  │                         │                          │
-└────────┬────────┘  │                         ▼                          │
-         │           │             openstack-private-cloud                │
-         │           │             (Ansible + OpenStack)                  │
-         │           │                                                    │
-         │           │  docker-class ──→ AWS-serverless                  │
-         │           │  docker-class ──→ aws-ec2-alb-lab                 │
-         │           └────────────────────────────────────────────────────┘
+┌─────────────────┐  ┌────────────────────────────────────────────────────────┐
+│ python-         │  │           2단계: 인프라 & 클라우드                      │
+│ crawling-lab    │  │                                                         │
+│ (크롤러 +       │  │  docker-class ──→ kubernetes-lab ──→ k8s-jupyter-lab   │
+│  Qdrant 연동)   │  │                         │                               │
+│                 │  │                         ▼                               │
+│ py-util         │  │             openstack-private-cloud                     │
+│ (기업 데이터    │  │             (Ansible + OpenStack)                       │
+│  수집 유틸)     │  │                                                         │
+└────────┬────────┘  │  docker-class ──→ aws-serverless / aws-ec2-alb-lab     │
+         │           │  aws-ec2-alb-lab ──→ aws-eks-lab                       │
+         │           │  AWS 서비스: aws-polly / aws-rekognition                │
+         │           │             aws-sqs-sns / aws-transcribe / chatbot-app  │
+         │           └────────────────────────────────────────────────────────┘
          │
          │     ┌───────────────────────────────────────────┐
          │     │        3 → 4단계: ML/DL 학습 경로         │
@@ -123,18 +149,18 @@
          │     ┌───────────────────────────────────────────────────────┐
          │     │              5단계: LLM & RAG                         │
          │     │                                                       │
-         │     │  Python-Langchain-Lab ──────────────────────────────┐ │
+         │     │  langchain-lab / Python-Langchain-Lab ─────────────┐ │
          │     │  (LangChain 카탈로그, Ollama/OpenAI 스위칭)          │ │
          │     │           │                                          │ │
-         │     │           ├──→ aihub-rag                             │ │
-         └─────┼──────────→│   (심리상담·의료·법률 RAG)              │ │
-               │           │                                          │ │
+         │     │           ├──→ aihub-rag (심리상담·의료·법률 RAG)   │ │
+         └─────┼──────────→│                                          │ │
                │           ├──→ AI-Python-Domain-RAG                 │ │
                │           │   (의학·고교영어 도메인 RAG)             │ │
-               │           │                                          │ │
                │           ├──→ education-counsel                    │ │
                │           │   (학생 진로상담 RAG Chatbot)            │ │
-               │           │                                          │ │
+               │           ├──→ meeting-agent (STT + 회의록)         │ │
+               │           ├──→ whisper-agent (상담 분석 RAG)        │ │
+               │           ├──→ ocr-webapp (OCR + AI 보완)           │ │
                │           └──→ ollama-llava-canvas ←────────────────┘ │
                │               (Ollama LLaVA + 캔버스)                 │
                └───────────────────────────────────────────────────────┘
@@ -145,7 +171,7 @@
      │  investment-analysis ─────────────────────────┐                    │
      │  (금융 knowledge RAG 기초)                     │                    │
      │           │                                   │                    │
-     │           ├──→ calflow                        │                    │
+     │           ├──→ invest-flow                    │                    │
      │           │   (Vue3+Node+Claude AI 투자 일정)  │                    │
      │           │                                   │                    │
      │           └──→ lumina-invest ←────────────────┘                    │
@@ -162,6 +188,16 @@
      │  python-ai-basic-lab ──→ stock-coin-trade                          │
      │  (AI 기초 + 주식 차트)   (Spring Boot 코인 모의투자)                │
      └─────────────────────────────────────────────────────────────────────┘
+
+     ┌─────────────────────────────────────────────────────────────────────┐
+     │              7단계: 풀스택 & 서비스 개발                             │
+     │                                                                     │
+     │  springboot-lab    (Spring Boot 3 MSA 시험 플랫폼)                  │
+     │  platform-backoffice (Spring MVC 관리자 백오피스)                   │
+     │  fe-vanilla        (Vanilla JS + FastAPI SaaS 데모)                 │
+     │  webrtc-app        (Vue3 WebRTC 협업 화상통화)                      │
+     │  inquiry-saas      (물류+인력 수발주 멀티 SaaS)                     │
+     └─────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -172,8 +208,9 @@
 
 ```
 edumgt-lab-init → python-basic-lab → docker-class
-  → Kubernetes-Class-Master → aws-ec2-alb-lab
-  → Python-Langchain-Lab → AI-Python-Domain-RAG 또는 education-counsel
+  → kubernetes-lab → aws-ec2-alb-lab
+  → langchain-lab → AI-Python-Domain-RAG 또는 education-counsel
+  → springboot-lab 또는 fe-vanilla (서비스 개발)
 ```
 
 ### 경로 B — MLOps/데이터 엔지니어
@@ -181,7 +218,7 @@ edumgt-lab-init → python-basic-lab → docker-class
 ```
 edumgt-lab-init → python-basic-lab → python-crawling-lab
   → py-ml-dl-lab → python-ml-class
-  → docker-class → Kubernetes-Class-Master
+  → docker-class → kubernetes-lab → k8s-jupyter-lab
   → stock-ML-DL-project → ai-agent-lab
 ```
 
@@ -189,16 +226,16 @@ edumgt-lab-init → python-basic-lab → python-crawling-lab
 
 ```
 edumgt-lab-init → python-basic-lab → python-crawling-lab (Qdrant 연동)
-  → Python-Langchain-Lab → aihub-rag → AI-Python-Domain-RAG
-  → ai-agent-lab → education-counsel
+  → langchain-lab → aihub-rag → AI-Python-Domain-RAG
+  → ai-agent-lab → meeting-agent 또는 whisper-agent
 ```
 
 ### 경로 D — 클라우드/인프라 엔지니어
 
 ```
-edumgt-lab-init → docker-class → Kubernetes-Class-Master
-  → openstack-private-cloud → AWS-serverless → aws-ec2-alb-lab
-  → (stock-ML-DL-project 배포 실습)
+edumgt-lab-init → docker-class → kubernetes-lab → k8s-jupyter-lab
+  → openstack-private-cloud → aws-serverless → aws-ec2-alb-lab
+  → aws-eks-lab → (aws-polly, aws-rekognition, aws-sqs-sns, aws-transcribe)
 ```
 
 ### 경로 E — 핀테크/금융 AI
@@ -206,7 +243,7 @@ edumgt-lab-init → docker-class → Kubernetes-Class-Master
 ```
 edumgt-lab-init → python-basic-lab → python-crawling-lab
   → python-ml-class → python-ai-basic-lab → investment-analysis
-  → stock-ML-DL-project → stock-coin-trade 또는 lumina-invest 또는 calflow
+  → stock-ML-DL-project → stock-coin-trade 또는 lumina-invest 또는 invest-flow
 ```
 
 ---
@@ -215,16 +252,18 @@ edumgt-lab-init → python-basic-lab → python-crawling-lab
 
 | 프로젝트 | 선수 프로젝트 | 근거 |
 |----------|--------------|------|
-| Kubernetes-Class-Master | docker-class | K8s 실습 전 Docker 컨테이너 이해 필수 |
+| kubernetes-lab | docker-class | K8s 실습 전 Docker 컨테이너 이해 필수 |
+| k8s-jupyter-lab | kubernetes-lab | K8s 기반 플랫폼 배포 경험 필요 |
+| aws-eks-lab | aws-ec2-alb-lab | AWS 네트워크·IAM 구성 경험 후 EKS |
 | openstack-private-cloud | docker-class | Ansible 실습 환경에 Docker 사용 |
 | lumina-invest | openstack-private-cloud | README에 "선수" 명시 |
 | aws-ec2-alb-lab | docker-class | ECS Fargate = 컨테이너 기반 |
 | AI-Python-Domain-RAG | python-crawling-lab | Qdrant Vector DB 연동 경험 필요 |
 | aihub-rag | python-crawling-lab | 데이터 정규화·Qdrant 구조 이해 필요 |
 | education-counsel | aihub-rag / AI-Python-Domain-RAG | RAG 응용 패턴 이해 후 진행 |
-| stock-ML-DL-project | python-ml-class + Kubernetes-Class-Master | ML 모델 + K8s 배포 병행 |
-| ai-agent-lab | Python-Langchain-Lab | LangChain Agent 기반 커리큘럼 |
-| calflow | investment-analysis | 금융 도메인 지식 기반 앱 |
+| stock-ML-DL-project | python-ml-class + kubernetes-lab | ML 모델 + K8s 배포 병행 |
+| ai-agent-lab | langchain-lab | LangChain Agent 기반 커리큘럼 |
+| invest-flow | investment-analysis | 금융 도메인 지식 기반 앱 |
 
 ---
 
@@ -232,15 +271,20 @@ edumgt-lab-init → python-basic-lab → python-crawling-lab
 
 | 레이어 | 기술 | 관련 프로젝트 수 |
 |--------|------|-----------------|
-| **프레임워크** | FastAPI | aws-ec2-alb-lab, AI-Python-Domain-RAG, aihub-rag, education-counsel, investment-analysis, lumina-invest, ollama-llava-canvas, python-ai-basic-lab (8개) |
-| **AI/LLM** | LangChain | Python-Langchain-Lab, ai-agent-lab (2개) |
-| **AI/LLM** | Ollama | Python-Langchain-Lab, ollama-llava-canvas (2개) |
-| **Vector DB** | Qdrant | python-crawling-lab, aihub-rag, AI-Python-Domain-RAG, education-counsel, investment-analysis, ai-agent-lab (6개) |
-| **스트리밍** | Kafka | stock-ML-DL-project (1개) |
-| **워크플로** | Airflow | stock-ML-DL-project, calflow (2개) |
-| **클라우드** | AWS | AWS-serverless, aws-ec2-alb-lab (2개) |
+| **프레임워크** | FastAPI | aws-ec2-alb-lab, AI-Python-Domain-RAG, aihub-rag, education-counsel, investment-analysis, lumina-invest, ollama-llava-canvas, python-ai-basic-lab, aws-polly, meeting-agent, whisper-agent, ocr-webapp, fe-vanilla, inquiry-saas (14개) |
+| **프레임워크** | Spring Boot | stock-coin-trade, springboot-lab, platform-backoffice (3개) |
+| **AI/LLM** | LangChain | langchain-lab, Python-Langchain-Lab, ai-agent-lab (3개) |
+| **AI/LLM** | Ollama | langchain-lab, Python-Langchain-Lab, ollama-llava-canvas, whisper-agent, ocr-webapp (5개) |
+| **AI/LLM** | OpenAI Whisper/GPT | meeting-agent, whisper-agent (2개) |
+| **Vector DB** | Qdrant | python-crawling-lab, aihub-rag, AI-Python-Domain-RAG, education-counsel, investment-analysis, ai-agent-lab, langchain-lab (7개) |
+| **Vector DB** | ChromaDB | whisper-agent (1개) |
+| **스트리밍** | Kafka | stock-ML-DL-project, springboot-lab (2개) |
+| **워크플로** | Airflow | stock-ML-DL-project (1개) |
+| **클라우드** | AWS | aws-serverless, aws-ec2-alb-lab, aws-eks-lab, aws-polly, aws-rekognition, aws-sqs-sns, aws-transcribe, chatbot-app (8개) |
 | **프라이빗 클라우드** | OpenStack | openstack-private-cloud (1개) |
 | **Graph DB** | Neo4j | lumina-invest (1개) |
+| **프론트엔드** | Vue 3 | invest-flow, webrtc-app (2개) |
+| **OCR** | Tesseract | ocr-webapp (1개) |
 
 ---
 
@@ -1140,6 +1184,113 @@ print(torch.cuda.is_available())   # True 이면 GPU 사용 중
 ### 공식 사이트
 - https://colab.research.google.com
 - https://colab.research.google.com/notebooks/intro.ipynb (튜토리얼)
+
+---
+
+## 2-3) Google AI Studio — Gemini 모델 직접 실습
+
+> **설치 없이 Google Gemini 모델을 바로 사용할 수 있는 무료 AI 개발 플랫폼입니다.**
+
+Google에서 제공하는 AI 개발자 도구로, 브라우저에서 Gemini 모델과 직접 대화하고 프롬프트를 테스트하며 코드를 생성할 수 있습니다.
+
+### 장점
+
+| 항목 | 내용 |
+|------|------|
+| 비용 | 구글 계정만 있으면 무료 사용 가능 (API 키 발급 포함) |
+| 모델 | Gemini 2.0 Flash / Gemini 2.5 Pro 등 최신 모델 즉시 사용 |
+| 기능 | 텍스트·이미지·오디오·영상 멀티모달 입력 지원 |
+| API | API 키 발급 → Python/Node.js 코드에 바로 연동 가능 |
+| 저장 | 프롬프트 저장 및 공유, 시스템 프롬프트 설정 |
+
+### 시작하는 방법
+
+1. 웹 브라우저에서 **Google AI Studio** 에 접속합니다.
+   - https://aistudio.google.com/prompts/new_chat
+2. 구글 계정으로 로그인합니다.
+3. 상단에서 모델(예: **Gemini 2.0 Flash**)을 선택합니다.
+4. 채팅창에 프롬프트를 입력하면 즉시 응답을 받을 수 있습니다.
+
+### 기본 사용 예시
+
+```
+# 텍스트 프롬프트 예시
+"Python으로 FastAPI 서버를 만드는 예제 코드를 작성해줘"
+
+# 이미지 분석
+이미지 파일을 드래그&드롭 → "이 이미지에 무엇이 있는지 설명해줘"
+
+# 코드 디버깅
+오류 메시지를 붙여넣기 → "이 오류의 원인과 해결 방법을 알려줘"
+```
+
+### API 키 발급 및 Python 연동
+
+AI Studio에서 발급한 API 키로 코드에서 직접 Gemini를 호출할 수 있습니다.
+
+```python
+# 패키지 설치
+# pip install google-generativeai
+
+import google.generativeai as genai
+
+genai.configure(api_key="YOUR_API_KEY")  # AI Studio에서 발급한 키
+
+model = genai.GenerativeModel("gemini-2.0-flash")
+response = model.generate_content("안녕하세요! Python 학습에 대해 알려주세요.")
+print(response.text)
+```
+
+### 시스템 프롬프트(System Instruction) 설정
+
+```python
+model = genai.GenerativeModel(
+    model_name="gemini-2.0-flash",
+    system_instruction="당신은 Python 전문가입니다. 항상 한국어로 답변하고 코드 예시를 포함하세요."
+)
+response = model.generate_content("FastAPI와 Flask의 차이점은?")
+print(response.text)
+```
+
+### 멀티모달 사용 (이미지 분석)
+
+```python
+import google.generativeai as genai
+from PIL import Image
+
+genai.configure(api_key="YOUR_API_KEY")
+model = genai.GenerativeModel("gemini-2.0-flash")
+
+image = Image.open("diagram.png")
+response = model.generate_content(["이 다이어그램을 설명해줘", image])
+print(response.text)
+```
+
+### Google Colab과의 차이점
+
+| 구분 | Google Colab | Google AI Studio |
+|------|--------------|-----------------|
+| 주 목적 | Python 코드 실행 환경 | AI 모델 프롬프트 테스트 |
+| 실행 방식 | Jupyter Notebook | 채팅/프롬프트 인터페이스 |
+| 모델 | 사용자가 직접 로드 | Gemini 모델 내장 |
+| API 키 | 별도 설정 | AI Studio에서 바로 발급 |
+| 무료 GPU | T4 GPU 제공 | 해당 없음 (모델 서버 측 실행) |
+
+> **활용 팁**: AI Studio에서 프롬프트를 테스트한 뒤 → API 키를 발급받아 → Colab 또는 로컬에서 코드로 연동하는 흐름이 가장 효율적입니다.
+
+### 학습 포인트
+
+| 항목 | 설명 |
+|------|------|
+| 프롬프트 엔지니어링 | 시스템 프롬프트, Few-shot, Chain-of-thought 실습 |
+| 멀티모달 AI | 텍스트·이미지·PDF·영상 복합 입력 처리 |
+| API 연동 | `google-generativeai` SDK로 Python/Node.js 앱에 AI 통합 |
+| 모델 비교 | Gemini 2.0 Flash(빠름) vs Gemini 2.5 Pro(정확) 성능 비교 |
+
+### 공식 사이트
+- https://aistudio.google.com/prompts/new_chat
+- https://ai.google.dev/gemini-api/docs (Gemini API 문서)
+- https://github.com/google-gemini/cookbook (예제 모음)
 
 ---
 

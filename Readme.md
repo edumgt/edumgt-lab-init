@@ -347,7 +347,9 @@ edumgt-lab-init → python-basic-lab → python-crawling-lab
 
 ### ① Ollama의 대체재 (개인/개발용 도구)
 * **llama.cpp:** Ollama의 핵심 구동 엔진이기도 한 원조 오픈소스입니다. C/C++로 작성되어 가벼우며, GPU가 없는 환경이나 맥북(Apple Silicon)에서 뛰어난 성능을 냅니다.
-* **LM Studio:** 터미널 명령어가 아닌 깔끔한 그래픽 UI(GUI)를 제공하는 프로그램입니다. 마우스 클릭만으로 Hugging Face의 다양한 sLLM 모델을 받아 챗GPT처럼 테스트할 수 있습니다.
+* **LM Studio:** 터미널 명령어가 아닌 깔끔한 그래픽 UI(GUI)를 제공하는 프로그램입니다. 마우스 클릭만으로 Hugging Face의 다양한 sLLM 모델을 받아 챗GPT처럼 테스트할 수 있습니다. OpenAI 호환 로컬 API 서버도 내장되어 있어 기존 코드를 수정 없이 로컬 모델로 전환할 수 있습니다.
+
+  > **📘 LM Studio 설치·사용 가이드:** [lmstudio/README.md](lmstudio/README.md) — 다운로드, 모델 설치, 채팅, API 서버, Python/Node.js 연동 예제 포함
 
 ### ② vLLM의 대체재 (실전 웹 서비스/프로덕션용 엔진)
 * **SGLang:** 최근 벤치마크에서 vLLM을 능가하며 급부상한 고성능 엔진입니다. 복잡한 AI 에이전트 워크플로우나 구조화된 데이터(JSON) 출력을 처리할 때 vLLM보다 더 빠르고 효율적입니다.
@@ -441,6 +443,10 @@ flowchart TD
   curl -fsSL https://ollama.com/install.sh | sh
   ollama pull llama3.2:3b   # 경량 모델 사전 다운로드
   ```
+- [ ] LM Studio 설치 (GUI 방식 로컬 AI, 선택 — CLI 대신 마우스로 모델 관리 가능)
+  - 다운로드: https://lmstudio.ai
+  - 설치 가이드: [lmstudio/README.md](lmstudio/README.md)
+  - 권장 모델: `Qwen2.5 7B Instruct Q4_K_M` 또는 `Llama 3.2 3B Q4_K_M`
 
 ---
 

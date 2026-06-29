@@ -4897,6 +4897,844 @@ code --install-extension Continue.continue
 
 ---
 
+## <i class="fa-brands fa-aws"></i> 개발 워크플로우 관리 도구 — AWS CodeCatalyst · Jira · Azure DevOps
+
+소프트웨어 개발 팀은 **소스 코드 관리 + 이슈 트래킹 + CI/CD 파이프라인**을 하나의 흐름으로 연결하는 워크플로우 플랫폼이 필요합니다. 대표적인 세 가지 도구를 상세히 비교합니다.
+
+### 도구 비교 요약
+
+| 항목 | AWS CodeCatalyst | Jira (Atlassian) | Azure DevOps |
+|------|-----------------|-----------------|--------------|
+| **운영 주체** | Amazon Web Services | Atlassian | Microsoft |
+| **핵심 강점** | AWS 서비스 네이티브 통합 | 이슈 트래킹·애자일 관리 최강 | MS 생태계 통합, All-in-One |
+| **무료 티어** | 3명·개인 프로젝트 무료 | 10명 이하 무료 | 5명 이하 무료 |
+| **CI/CD** | CodePipeline·빌드 포함 | Bitbucket Pipelines (별도) | Azure Pipelines 내장 |
+| **코드 저장소** | 내장 Git 저장소 | 없음 (GitHub·Bitbucket 연동) | Azure Repos 내장 |
+| **칸반 보드** | 내장 이슈 + 백로그 | 고급 칸반·스프린트 보드 | Azure Boards 내장 |
+| **적합 대상** | AWS 기반 개발팀 | 대규모 애자일 팀 | MS/Azure 기반 팀 |
+
+---
+
+### 1. AWS Code 시리즈 & CodeCatalyst
+
+#### 1-1. AWS Code 시리즈 전체 구성
+
+AWS는 CI/CD 파이프라인을 구성하는 개별 서비스와, 이를 통합하는 CodeCatalyst 두 가지 방향을 제공합니다.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    AWS Code 시리즈 생태계                        │
+│                                                                  │
+│  CodeCatalyst (통합 플랫폼) ──────────────────────────────┐     │
+│                                                           │     │
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐ │     │
+│  │ CodeCommit   │  │  CodeBuild   │  │  CodeDeploy     │ │     │
+│  │ (Git 저장소) │→ │ (빌드/테스트)│→ │ (EC2·ECS·Lambda)│ │     │
+│  └──────────────┘  └──────────────┘  └─────────────────┘ │     │
+│           │               │                  │             │     │
+│           └───────────────┴──────────────────┘             │     │
+│                           ▼                                │     │
+│                   CodePipeline (전체 파이프라인 오케스트레이션)   │
+│                                                           │     │
+│  CodeArtifact (패키지 저장소) · CodeGuru (AI 코드 리뷰)  ◄┘     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+| 서비스 | 역할 | 핵심 용도 |
+|--------|------|----------|
+| **CodeCommit** | Git 기반 소스 저장소 | AWS IAM으로 접근 제어, 프라이빗 Git 호스팅 |
+| **CodeBuild** | 완전관리형 빌드 서버 | Docker 빌드, 단위 테스트, 아티팩트 생성 |
+| **CodeDeploy** | 배포 자동화 | EC2, ECS, Lambda, On-Premise 무중단 배포 |
+| **CodePipeline** | CI/CD 오케스트레이션 | 소스→빌드→테스트→배포 파이프라인 시각화 |
+| **CodeArtifact** | 패키지 저장소 | npm, Maven, PyPI 프라이빗 패키지 관리 |
+| **CodeGuru** | AI 코드 리뷰 | 자동 코드 품질·보안 취약점 분석 (Reviewer), 성능 병목 탐지 (Profiler) |
+| **CodeCatalyst** | 통합 개발 플랫폼 | 위 서비스 + 이슈 트래킹 + 팀 협업 통합 |
+
+#### 1-2. AWS CodeCatalyst 상세 가이드
+
+**CodeCatalyst**는 2023년 GA(일반 출시)된 AWS의 통합 소프트웨어 개발 플랫폼입니다. 소스 코드, CI/CD 파이프라인, 이슈 트래킹, 팀 관리를 단일 인터페이스에서 제공합니다.
+
+##### 핵심 개념
+
+```
+Space (조직 단위)
+  └── Project (프로젝트)
+        ├── Source Repository (Git 저장소 — 내장 또는 GitHub 연동)
+        ├── Workflows (CI/CD 파이프라인)
+        ├── Issues (이슈 트래킹 + 백로그)
+        ├── Dev Environment (클라우드 IDE — VS Code/JetBrains 원격 연결)
+        └── Reports (테스트·코드 커버리지 리포트)
+```
+
+##### 가입 및 초기 설정
+
+**Step 1 — AWS Builder ID 생성 (CodeCatalyst 전용 계정)**
+
+```
+1. https://codecatalyst.aws 접속
+2. [Get started for free] 클릭
+3. [Create AWS Builder ID] 선택
+   - 이메일 주소 입력
+   - 인증 이메일 수신 후 코드 입력
+   - 이름(표시 이름) 설정
+   ※ AWS Builder ID는 기존 AWS 계정과 별개 — 별도 가입 필요
+4. [Create a Space] 클릭
+   - Space 이름 입력 (조직·팀 이름)
+   - AWS 계정 연결 (AWS 리소스 배포 시 필요 — 선택)
+   - 리전 선택 (ap-northeast-2 = 서울)
+```
+
+**Step 2 — 프로젝트 생성**
+
+```
+1. Space 대시보드 → [Create project]
+2. 방식 선택:
+   Option A: [Start with a blueprint]
+     → 미리 구성된 템플릿 선택 (웹앱, 서버리스, 컨테이너 등)
+   Option B: [Start from scratch]
+     → 빈 프로젝트 → 직접 구성
+3. 프로젝트 이름 입력 → [Create project]
+```
+
+**Step 3 — 소스 저장소 연결**
+
+```bash
+# 방법 A: CodeCatalyst 내장 Git 저장소 사용
+# 프로젝트 → Source repositories → [Add repository] → [Create repository]
+# → 저장소 이름 입력 → [Create]
+
+# 로컬 클론
+git clone https://git.us-west-2.codecatalyst.aws/v1/MySpace/MyProject/MyRepo
+# AWS Builder ID로 인증 (PAT — Personal Access Token 발급 필요)
+
+# 방법 B: GitHub 저장소 연동
+# Source repositories → [Add repository] → [Link GitHub repository]
+# → GitHub App 설치 → 저장소 선택
+```
+
+**Step 4 — PAT(Personal Access Token) 발급**
+
+```
+1. 우측 상단 프로필 아이콘 → [My settings]
+2. [Personal access tokens] → [Generate personal access token]
+3. 토큰 이름 입력, 만료일 설정
+4. [Generate token] → 토큰 복사 (재표시 불가)
+
+# Git 자격증명으로 사용
+git config --global credential.helper store
+# 이후 clone/push 시 사용자명: AWS Builder ID 이메일, 비밀번호: 발급한 PAT
+```
+
+##### Workflow (CI/CD 파이프라인) 구성
+
+CodeCatalyst Workflow는 YAML로 정의하며 `.codecatalyst/workflows/` 에 저장됩니다.
+
+```yaml
+# .codecatalyst/workflows/main-pipeline.yaml
+Name: main-pipeline
+SchemaVersion: "1.0"
+
+Triggers:
+  - Type: Push
+    Branches:
+      - main
+
+Actions:
+  Build:
+    Identifier: aws/build@v1
+    Inputs:
+      Sources:
+        - WorkflowSource
+    Configuration:
+      Steps:
+        - Run: pip install -r requirements.txt
+        - Run: pytest tests/ --junitxml=test-results.xml
+    Outputs:
+      Reports:
+        TestReport:
+          Format: JUNITXML
+          IncludePaths:
+            - test-results.xml
+
+  Deploy:
+    Identifier: aws/ecs-deploy@v1
+    DependsOn:
+      - Build
+    Environment:
+      Name: Production
+      Connections:
+        - AccountId: "123456789012"
+          Role: CodeCatalystDeployRole
+    Configuration:
+      cluster: my-ecs-cluster
+      service: my-ecs-service
+      task-definition: task-def.json
+      region: ap-northeast-2
+```
+
+```bash
+# 워크플로우 파일 커밋 → 자동 트리거
+git add .codecatalyst/workflows/main-pipeline.yaml
+git commit -m "feat: add CI/CD pipeline"
+git push origin main
+# → CodeCatalyst 콘솔에서 실행 현황 실시간 확인 가능
+```
+
+##### Dev Environment (클라우드 IDE)
+
+CodeCatalyst는 **클라우드 기반 개발 환경**을 제공합니다. 로컬 환경 설치 없이 VS Code 또는 JetBrains를 원격으로 연결해 개발할 수 있습니다.
+
+```
+1. 프로젝트 → [Dev Environments] → [Create Dev Environment]
+2. IDE 선택: VS Code (권장) / JetBrains / Cloud9
+3. 인스턴스 크기 선택:
+   - Dev.Standard1.Small  (2 vCPU, 4 GB RAM)  — 경량 작업
+   - Dev.Standard1.Medium (4 vCPU, 8 GB RAM)  — 일반 개발
+   - Dev.Standard1.Large  (8 vCPU, 16 GB RAM) — 빌드·ML 작업
+4. 저장소 브랜치 선택 → [Create]
+5. VS Code 원격 연결 → 자동으로 소스 코드 클론 완료
+```
+
+##### 이슈(Issues) & 백로그 관리
+
+```
+이슈 생성:
+  프로젝트 → Issues → [Create issue]
+  - 제목, 설명, 담당자, 우선순위, 스프린트, 레이블 설정
+
+이슈 상태 흐름:
+  Backlog → In Progress → In Review → Done
+
+이슈와 PR 연결:
+  커밋 메시지에 이슈 번호 포함 → 자동 연결
+  예) git commit -m "fix: 로그인 오류 수정 /issue/42"
+```
+
+##### 무료 티어 한도 (2024 기준)
+
+| 리소스 | 무료 한도/월 |
+|--------|------------|
+| 사용자 수 | 3명 |
+| 빌드 시간 | 2,000분 |
+| 소스 저장소 용량 | 10 GB |
+| Dev Environment | 60시간 |
+| 아티팩트 저장소 | 5 GB |
+
+> 초과 시 AWS 계정에 종량제 요금 부과 (계정 연결 필요)
+
+##### AWS CodeCatalyst vs 개별 Code 서비스 선택 가이드
+
+```
+CodeCatalyst 선택 기준:
+  ✅ 새 프로젝트를 처음부터 AWS에서 시작
+  ✅ 소스·CI/CD·이슈 트래킹을 하나로 관리
+  ✅ 클라우드 IDE로 팀원이 동일 환경에서 개발
+
+개별 서비스 (CodePipeline + CodeBuild + CodeDeploy) 선택 기준:
+  ✅ 기존 GitHub/GitLab 저장소 유지하면서 AWS 배포만 자동화
+  ✅ 세밀한 IAM 권한 제어 필요
+  ✅ 기존 CI/CD 시스템과 연동
+```
+
+---
+
+### 2. Jira — 칸반 & 스크럼 프로젝트 관리
+
+Jira는 Atlassian이 개발한 **이슈 트래킹 + 애자일 프로젝트 관리 플랫폼**입니다. 전 세계 소프트웨어 팀에서 가장 많이 사용되는 협업 도구 중 하나입니다.
+
+#### 2-1. 핵심 개념
+
+```
+Organization (조직)
+  └── Site (사이트 — example.atlassian.net)
+        └── Project (프로젝트)
+              ├── Board (칸반 또는 스크럼 보드)
+              ├── Backlog (백로그 — 스크럼 전용)
+              ├── Roadmap (로드맵)
+              ├── Issues (이슈)
+              └── Reports (번다운 차트, 속도 차트 등)
+```
+
+| 개념 | 설명 |
+|------|------|
+| **Epic** | 큰 기능 단위 (여러 Story/Task 포함, 수주~수개월) |
+| **Story** | 사용자 관점의 기능 요구사항 ("사용자로서 나는 …할 수 있다") |
+| **Task** | 개발 작업 단위 (Epic·Story보다 작음) |
+| **Bug** | 결함 보고 및 추적 |
+| **Sub-task** | Task를 더 작게 분할 |
+| **Sprint** | 일정 기간(1~4주) 내 완료할 작업 묶음 (스크럼) |
+| **Kanban** | 진행 상태별 열(Column)로 작업 흐름을 시각화 |
+
+#### 2-2. 가입 및 초기 설정
+
+**Step 1 — Atlassian 계정 생성**
+
+```
+1. https://www.atlassian.com 접속
+2. [Get it free] 또는 https://id.atlassian.com/signup 접속
+3. 이메일 입력 → [Continue]
+4. 이름, 비밀번호 설정 → [Sign up]
+5. 이메일 인증 완료
+```
+
+**Step 2 — Jira Software 무료 사이트 생성**
+
+```
+1. https://www.atlassian.com/software/jira 접속 → [Get it free]
+2. 사이트 이름 입력 (예: myteam → myteam.atlassian.net)
+3. 팀 규모 선택 → [Agree and sign up]
+4. 무료 플랜 확인 (최대 10명, 기본 기능)
+```
+
+**Step 3 — 첫 프로젝트 생성**
+
+```
+1. Jira 대시보드 → [Create project]
+2. 프로젝트 유형 선택:
+   ┌─────────────────────────────────────────────────────┐
+   │ Software development (소프트웨어 개발)               │
+   │   ├── Scrum     — 스프린트 + 번다운 차트 + 백로그    │
+   │   └── Kanban    — 연속 흐름 + WIP 제한 + 칸반 보드   │
+   │                                                     │
+   │ Business (비즈니스)                                  │
+   │   └── Project management — 일반 작업 관리            │
+   └─────────────────────────────────────────────────────┘
+3. 프로젝트 이름·키(영문 약자) 입력
+4. [Create project]
+```
+
+#### 2-3. 칸반 보드 상세 사용법
+
+**칸반(Kanban)이란?** 일본 도요타 생산 방식에서 유래한 시각적 작업 흐름 관리 방법론입니다. 진행 중인 작업(WIP)을 제한해 병목을 방지하고 흐름을 최적화합니다.
+
+```
+칸반 보드 기본 구조:
+
+┌──────────────┬──────────────┬──────────────┬──────────────┐
+│   To Do      │ In Progress  │   In Review  │     Done     │
+│  (할 일)     │  (진행 중)   │  (검토 중)   │  (완료)      │
+├──────────────┼──────────────┼──────────────┼──────────────┤
+│ ○ 로그인 API │ ○ 회원가입   │ ○ DB 스키마  │ ○ 환경 구성  │
+│   #PROJ-12   │   #PROJ-8    │   #PROJ-5    │   #PROJ-1    │
+│              │              │              │              │
+│ ○ 대시보드UI │ ○ JWT 토큰   │              │ ○ Git 설정   │
+│   #PROJ-15   │   #PROJ-9    │              │   #PROJ-2    │
+│              │              │              │              │
+│              │ WIP 제한: 3  │ WIP 제한: 2  │              │
+└──────────────┴──────────────┴──────────────┴──────────────┘
+```
+
+**보드 열(Column) 커스터마이징**
+
+```
+1. 보드 우측 상단 [Board settings] → [Columns]
+2. [Add column] 으로 열 추가
+3. 각 열에 이슈 상태 매핑
+4. WIP(Work In Progress) 제한 설정:
+   - 각 열에 최대 동시 작업 수 설정
+   - WIP 초과 시 시각적 경고 표시
+   - 제약을 통해 병목 지점 식별 가능
+```
+
+**이슈 생성 및 관리**
+
+```
+이슈 생성:
+  보드에서 [+ Create issue] → 제목 입력 (빠른 생성)
+  또는 [Create] 버튼 → 상세 폼 (담당자, 우선순위, 레이블, 첨부파일 등)
+
+이슈 이동:
+  카드를 드래그 → 다른 열로 이동 (상태 자동 변경)
+  또는 이슈 클릭 → Status 필드 클릭 → 상태 선택
+
+이슈 우선순위:
+  🔴 Highest (최고)   🟠 High (높음)
+  🟡 Medium (중간)    🔵 Low (낮음)   ⚪ Lowest (최저)
+```
+
+**JQL(Jira Query Language) — 이슈 검색**
+
+```jql
+-- 내 이슈 중 진행 중인 것
+assignee = currentUser() AND status = "In Progress"
+
+-- 이번 스프린트 미완료 이슈
+sprint in openSprints() AND status != Done
+
+-- 지난 7일간 생성된 버그
+issuetype = Bug AND created >= -7d
+
+-- 우선순위 높은 미완료 이슈 (담당자순 정렬)
+priority in (High, Highest) AND status != Done ORDER BY assignee ASC
+
+-- 특정 에픽 하위 이슈
+"Epic Link" = PROJ-100
+
+-- 레이블로 필터링
+labels = "backend" AND status = "In Progress"
+```
+
+**자동화 규칙(Automation) 설정**
+
+```
+프로젝트 설정 → Automation → [Create rule]
+
+예시 1: PR 생성 시 이슈 자동 전환
+  Trigger: Pull request created
+  Condition: Issue matches JQL (status = "To Do")
+  Action: Transition issue → "In Progress"
+
+예시 2: PR 머지 시 이슈 완료
+  Trigger: Pull request merged
+  Action: Transition issue → "Done"
+
+예시 3: 기한 초과 자동 알림
+  Trigger: Scheduled (매일 오전 9시)
+  Condition: Issue matches (due < now() AND status != Done)
+  Action: Send email to assignee
+```
+
+#### 2-4. GitHub 연동
+
+```
+1. Jira 프로젝트 → Project settings → Integrations → GitHub
+   또는 Atlassian Marketplace → GitHub for Jira 앱 설치
+
+2. 커밋 메시지에 이슈 키 포함 → 자동 연결
+   git commit -m "feat: 로그인 API 구현 PROJ-12"
+
+3. 연결 효과:
+   - Jira 이슈 화면에 관련 커밋·브랜치·PR 자동 표시
+   - PR 제목에 이슈 키 포함 → 이슈 상태 자동 전환 가능
+```
+
+#### 2-5. Jira 플랜 비교
+
+| 플랜 | 가격 | 사용자 | 주요 기능 |
+|------|------|--------|----------|
+| **Free** | 무료 | 최대 10명 | 칸반·스크럼 보드, 백로그, 로드맵(기본) |
+| **Standard** | $8.15/사용자/월 | 무제한 | 고급 권한, 감사 로그, 9~5 지원 |
+| **Premium** | $16/사용자/월 | 무제한 | AI 기능, 고급 로드맵, 24/7 지원, 샌드박스 |
+| **Enterprise** | 맞춤 | 무제한 | 무제한 사이트, SSO, IP 화이트리스트 |
+
+> **교육·스타트업 팀 권장:** Free 플랜으로 시작 → 10명 초과 또는 고급 기능 필요 시 Standard 업그레이드
+
+---
+
+### 3. Microsoft Azure DevOps
+
+Azure DevOps는 Microsoft가 제공하는 **All-in-One DevOps 플랫폼**입니다. Git 저장소, CI/CD 파이프라인, 칸반 보드, 아티팩트 저장소, 테스트 관리를 모두 포함합니다.
+
+#### 3-1. 핵심 구성 요소 (5개 서비스)
+
+```
+Azure DevOps Organization
+  └── Project
+        ├── Azure Boards   — 이슈 트래킹, 칸반, 스크럼, 로드맵
+        ├── Azure Repos    — Git/TFVC 소스 코드 저장소
+        ├── Azure Pipelines— CI/CD 파이프라인 (무료 1,800분/월)
+        ├── Azure Test Plans — 수동·자동화 테스트 관리
+        └── Azure Artifacts— npm, Maven, NuGet, PyPI 패키지 피드
+```
+
+| 서비스 | 설명 | 무료 한도 |
+|--------|------|----------|
+| **Azure Boards** | 칸반·스크럼·Epic·Story·Task 관리 | 무제한 (5명 이하 무료) |
+| **Azure Repos** | 프라이빗 Git 저장소 | 무제한 저장소·용량 |
+| **Azure Pipelines** | 빌드·테스트·배포 파이프라인 | 1,800분/월 (Linux/Windows) |
+| **Azure Test Plans** | 테스트 케이스·실행 관리 | Basic+Test Plans $52/사용자/월 |
+| **Azure Artifacts** | 패키지 저장소 | 2 GB 무료 |
+
+#### 3-2. 가입 및 초기 설정
+
+**Step 1 — Microsoft 계정 생성**
+
+```
+1. https://account.microsoft.com 접속
+   또는 https://outlook.com → 계정 없음? [새 계정 만들기]
+2. 이메일 주소 입력 (기존 이메일 사용 가능) 또는 새 Outlook 이메일 생성
+3. 비밀번호 설정 → 이름 입력 → 국가/생년월일 입력
+4. 보안 코드 인증 완료
+```
+
+**Step 2 — Azure DevOps 조직 생성**
+
+```
+1. https://dev.azure.com 접속
+2. Microsoft 계정으로 로그인
+3. [Start free] 클릭
+4. [New organization] (또는 자동으로 조직 생성 화면 이동)
+5. 조직 이름 입력 (예: myteam → dev.azure.com/myteam)
+6. 지역 선택: East Asia (한국에서 가장 가까움)
+7. [Continue] → 조직 생성 완료
+```
+
+**Step 3 — 첫 프로젝트 생성**
+
+```
+1. 조직 대시보드 → [New project]
+2. 프로젝트 이름 입력
+3. 가시성: Private (비공개) 또는 Public (공개)
+4. Advanced 설정:
+   - Version control: Git (권장) 또는 TFVC
+   - Work item process: Agile / Scrum / CMMI / Basic
+     → Scrum: 스프린트·번다운 차트 중심
+     → Agile: Epic·Feature·Story·Task 계층 (일반적)
+     → Basic: 단순 To Do/Doing/Done 3단계
+5. [Create] → 프로젝트 생성 완료
+```
+
+#### 3-3. Azure Boards — 칸반 & 스크럼 사용법
+
+**Work Item 계층 구조 (Agile 프로세스 기준)**
+
+```
+Epic (대규모 기능)
+  └── Feature (기능 단위)
+        └── User Story (사용자 스토리)
+              └── Task (작업 단위)
+              └── Bug (버그)
+                    └── Test Case (테스트 케이스)
+```
+
+**칸반 보드 설정 및 사용**
+
+```
+1. 프로젝트 → Boards → [Boards] (칸반 뷰)
+2. 기본 열: Active → Resolved → Closed
+   커스터마이즈: [Board settings] (우측 상단 톱니바퀴)
+     → Columns 탭 → Add Column / 이름 변경
+     → WIP 제한 설정 (각 열 최대 작업 수)
+
+3. Work Item 생성:
+   보드 상단 [+ New item] → 제목 입력 → Enter
+   또는 Backlog → [+ New Work Item] → 유형·제목 입력
+
+4. 카드 이동:
+   드래그 앤 드롭으로 열 이동
+   또는 카드 클릭 → State 필드 변경
+
+5. 태그·레이블 추가:
+   Work Item 상세 → Tags 필드 → 태그 입력
+   보드에서 [Filter] → 태그로 필터링
+```
+
+**스프린트(Sprint) 설정**
+
+```
+1. Project settings → Boards → Team configuration → Iterations
+2. [New child] → 스프린트 이름 (예: Sprint 1), 시작·종료일 설정
+3. Backlog 화면 → 이슈를 스프린트로 드래그
+4. [Sprints] 뷰 → 스프린트 번다운 차트 자동 생성
+```
+
+#### 3-4. Azure Repos — Git 저장소 사용법
+
+```bash
+# 저장소 클론
+git clone https://myteam@dev.azure.com/myteam/MyProject/_git/MyRepo
+# 패스워드: Azure DevOps PAT 사용
+
+# PAT 발급
+# User settings (우측 상단 아이콘) → Personal access tokens
+# → [New Token] → 이름, 만료일, 권한 설정 → [Create]
+# 권한 선택: Code(Read & write), Work Items(Read & write)
+
+# 브랜치 전략 (기본값: main)
+git checkout -b feature/PROJ-42-login-api
+git add .
+git commit -m "feat: 로그인 API 구현 #42"
+git push origin feature/PROJ-42-login-api
+
+# Pull Request 생성
+# Azure Repos → Pull requests → [New pull request]
+# → 소스 브랜치 선택 → 대상 브랜치(main) → 리뷰어 지정 → [Create]
+```
+
+**Branch Policy 설정 (코드 품질 게이트)**
+
+```
+1. Repos → Branches → main 브랜치 옆 [...] → Branch policies
+2. 설정 가능 정책:
+   ✅ Require a minimum number of reviewers (최소 리뷰어 수)
+   ✅ Check for linked work items (이슈 연결 필수)
+   ✅ Check for comment resolution (모든 댓글 해결 후 병합)
+   ✅ Build validation (CI 파이프라인 통과 필수)
+   ✅ Require merge strategy: Squash merge / Rebase
+```
+
+#### 3-5. Azure Pipelines — CI/CD 파이프라인
+
+```yaml
+# azure-pipelines.yml (저장소 루트에 배치)
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  PYTHON_VERSION: '3.11'
+
+stages:
+  - stage: Build
+    displayName: 빌드 & 테스트
+    jobs:
+      - job: Test
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(PYTHON_VERSION)
+
+          - script: |
+              pip install -r requirements.txt
+              pytest tests/ --junitxml=junit.xml --cov=. --cov-report=xml
+            displayName: 테스트 실행
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: junit.xml
+
+          - task: PublishCodeCoverageResults@1
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: coverage.xml
+
+  - stage: Deploy
+    displayName: 프로덕션 배포
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - deployment: DeployProd
+        environment: production
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: |
+                    echo "배포 스크립트 실행"
+                    # AWS CLI, kubectl, docker push 등
+                  displayName: 배포 실행
+```
+
+```
+파이프라인 생성:
+1. Pipelines → [New pipeline]
+2. 저장소 선택 (Azure Repos Git / GitHub / Bitbucket 등)
+3. 파이프라인 구성 선택:
+   - Starter pipeline (빈 YAML)
+   - 기존 YAML 파일 선택
+   - 권장 템플릿 사용 (Python, Node.js, Docker, Kubernetes 등)
+4. YAML 편집 → [Save and run]
+```
+
+**환경(Environment) 및 승인 게이트**
+
+```
+1. Pipelines → Environments → [New environment]
+2. 환경 이름: production / staging / development
+3. Approvals and checks 설정:
+   [Add check] → Approvals
+   → 승인자 지정 (사람 또는 팀)
+   → Timeout 설정
+   → 배포 전 승인 필수화
+```
+
+#### 3-6. GitHub 연동 및 Azure DevOps Boards
+
+기존에 GitHub을 사용하는 팀은 저장소는 GitHub에 두고 Boards + Pipelines만 Azure DevOps로 사용할 수 있습니다.
+
+```
+Azure Boards + GitHub 연동:
+1. Organization settings → GitHub connections
+2. [Connect your GitHub account]
+3. GitHub App 설치 → 저장소 권한 부여
+
+커밋 메시지 연결:
+  git commit -m "fix: 버그 수정 AB#42"
+  → AB#42 가 Azure Boards Work Item #42 와 자동 연결
+
+GitHub Actions → Azure Pipelines 연동:
+```
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to Azure
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: my-web-app
+          package: .
+```
+
+#### 3-7. Azure DevOps 플랜 비교
+
+| 플랜 | 가격 | 포함 내용 |
+|------|------|----------|
+| **Free** | 무료 | 5명 Basic, Pipelines 1,800분/월, Artifacts 2GB |
+| **Basic** | $6/사용자/월 | Boards + Repos + Pipelines (무제한) |
+| **Basic + Test Plans** | $52/사용자/월 | Basic + 테스트 관리 도구 |
+| **Visual Studio 구독** | $45~$250/월 | VS 라이선스 포함, Azure DevOps 자동 포함 |
+
+> **학생·스타트업:** https://azure.microsoft.com/ko-kr/free → Azure 무료 계정 ($200 크레딧 + 12개월 무료 서비스)
+
+---
+
+### 4. 세 도구 통합 활용 패턴
+
+팀 규모와 기술 스택에 따라 도구를 조합하는 방법입니다.
+
+#### 패턴 A — AWS 중심 팀 (이 과정 권장)
+
+```
+소스 코드: GitHub (익숙함 + 오픈소스 생태계)
+이슈 트래킹: Jira Free (칸반 + 에픽 관리)
+CI/CD: AWS CodePipeline + CodeBuild
+배포: AWS CodeDeploy → ECS / Lambda / EKS
+패키지: AWS CodeArtifact
+
+GitHub ←→ Jira (커밋 메시지로 이슈 연결)
+GitHub ←→ CodePipeline (웹훅으로 빌드 트리거)
+```
+
+#### 패턴 B — 소규모 팀 All-in-One (입문 권장)
+
+```
+AWS CodeCatalyst 단독 사용
+  ├── 소스: 내장 Git 저장소 또는 GitHub 연동
+  ├── CI/CD: Workflow YAML
+  ├── 이슈: 내장 Issues
+  └── 개발환경: Dev Environment (클라우드 IDE)
+
+장점: 단일 플랫폼, AWS 계정 하나로 관리
+단점: Jira 대비 이슈 트래킹 기능 제한적
+```
+
+#### 패턴 C — Microsoft 생태계 팀
+
+```
+소스 코드: Azure Repos (또는 GitHub)
+이슈 트래킹: Azure Boards
+CI/CD: Azure Pipelines
+패키지: Azure Artifacts
+배포: Azure App Service / AKS / Azure Functions
+
+GitHub Actions → Azure 배포 (azure/login + webapps-deploy)
+```
+
+#### 패턴 D — 교육·학습 환경 (이 과정 실습)
+
+```
+Phase 1 (입문):
+  GitHub + Jira Free 칸반 → 이슈 트래킹 + PR 관리
+
+Phase 2 (심화):
+  GitHub + AWS CodePipeline
+  → 코드 푸시 → 자동 빌드 → ECS/Lambda 배포
+
+Phase 3 (통합):
+  CodeCatalyst 또는 Azure DevOps
+  → All-in-One DevOps 파이프라인 경험
+```
+
+#### 워크플로우 흐름도
+
+```mermaid
+flowchart TD
+    A[이슈 생성\nJira / Azure Boards\n / CodeCatalyst] --> B[브랜치 생성\ngit checkout -b feature/ISSUE-ID]
+    B --> C[개발 작업\nVS Code / Dev Environment]
+    C --> D[커밋 + 푸시\ngit commit -m 'feat: 기능 ISSUE-42']
+    D --> E[PR / MR 생성\nGitHub / Azure Repos]
+    E --> F[CI 파이프라인 자동 실행\nCodePipeline / Azure Pipelines\n / GitHub Actions]
+    F --> G{테스트 통과?}
+    G -->|실패| H[코드 수정 → 재푸시]
+    H --> F
+    G -->|성공| I[코드 리뷰\n팀원 Approve]
+    I --> J[PR 병합\nmain 브랜치]
+    J --> K[CD 파이프라인\n자동 배포]
+    K --> L[이슈 자동 완료\nDone / Closed]
+    L --> M((배포 완료\n다음 이슈로)]
+```
+
+---
+
+### 5. 도구별 핵심 단축키 & CLI 요약
+
+**Jira 단축키**
+
+| 단축키 | 기능 |
+|--------|------|
+| `C` | 새 이슈 생성 |
+| `G` + `B` | 보드로 이동 |
+| `G` + `I` | 백로그로 이동 |
+| `?` | 단축키 목록 표시 |
+| `/` | 이슈 검색 |
+
+**Azure DevOps CLI**
+
+```bash
+# Azure CLI + DevOps 확장 설치
+pip install azure-cli
+az extension add --name azure-devops
+
+# 로그인
+az devops login --organization https://dev.azure.com/myorg
+
+# Work Item 생성
+az boards work-item create \
+  --type "User Story" \
+  --title "로그인 API 구현" \
+  --project MyProject
+
+# 파이프라인 실행
+az pipelines run --name "main-pipeline" --project MyProject
+
+# PR 생성
+az repos pr create \
+  --repository MyRepo \
+  --source-branch feature/login \
+  --target-branch main \
+  --title "feat: 로그인 API 구현"
+```
+
+**AWS CLI — CodePipeline 관리**
+
+```bash
+# 파이프라인 목록 조회
+aws codepipeline list-pipelines
+
+# 파이프라인 실행 시작
+aws codepipeline start-pipeline-execution --name MyPipeline
+
+# 파이프라인 실행 상태 확인
+aws codepipeline get-pipeline-state --name MyPipeline
+
+# CodeBuild 빌드 로그 확인
+aws codebuild list-builds-for-project --project-name MyProject
+aws codebuild batch-get-builds --ids <build-id>
+```
+
+---
+
 ## <i class="fa-solid fa-tv"></i> 관련 유튜브 동영상
 
 아래 링크를 클릭하면 유튜브에서 관련 동영상을 검색할 수 있습니다.

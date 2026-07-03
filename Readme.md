@@ -5836,6 +5836,32 @@ aws codebuild batch-get-builds --ids <build-id>
 
 ---
 
+# 💻 RTX 3080 노트북 GPU 상태 진단 및 AI 개발 최적화 가이드
+
+## 1. 현재 시스템 상태 분석 (Fact Check)
+사용자가 제공한 `nvidia-smi` 출력 데이터를 기반으로 분석한 현재 GPU의 사양 및 상태입니다.
+
+| 항목 | 상세 내용 | 상태 및 진단 |
+| :--- | :--- | :--- |
+| **GPU 모델** | NVIDIA GeForce RTX 3080 Laptop GPU | 정상 인식 완료 |
+| **VRAM (비디오 메모리)** | **8,192 MiB (8GB)** | 로컬 모델 학습 및 경량 LLM 추론에 적합 |
+| **드라이버 버전** | 576.02 | **최신 상태** |
+| **CUDA 버전** | 12.9 | **최신 상태** (최신 AI 프레임워크와 호환성 우수) |
+| **최대 전력 (TGP)** | **87W** | 노트북 제조사 설정 사양 확인 |
+| **현재 부하량 / 전력 / 온도** | 0% / 25W / 54°C | 대기 상태 (Idle). 연산이 수행되지 않고 있음 |
+
+---
+
+## 2. VS Code AI 개발 시 GPU 실시간 모니터링 방법
+AI 학습이나 추론 코드를 실행할 때, 윈도우 작업 관리자는 CUDA 연산량을 정확히 반영하지 못할 수 있습니다. VS Code 터미널에서 다음 명령어를 통해 실시간으로 검증해야 합니다.
+
+### 🔍 실시간 모니터링 명령어 (1초 주기로 갱신)
+```bash
+nvidia-smi -l 1
+
+
+---
+
 ## 부록: Java OpenJDK 상세 설치 가이드 (Windows)
 
 ### 설치 목적
@@ -5952,3 +5978,5 @@ mvn clean package
 | Logging | Log4j2 |
 | IDE/Editor | VS Code |
 | Version Control | Git + GitHub |
+
+

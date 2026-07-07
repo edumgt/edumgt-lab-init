@@ -44,7 +44,7 @@ jobs:
 
       - name: 메타데이터 추출
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.IMAGE_BASE }}/${{ matrix.image_suffix }}
           tags: |

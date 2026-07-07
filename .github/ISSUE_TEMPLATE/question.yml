@@ -1,0 +1,45 @@
+name: ❓ 질문 및 도움 요청
+description: 환경 설정이나 실습 중 막히는 부분이 있으신가요?
+title: "[Q] "
+labels: ["question"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        질문 전에 README의 관련 섹션과 기존 이슈를 먼저 확인해주세요.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: 질문 내용
+      description: 어떤 부분에서 막히셨나요?
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-tried
+    attributes:
+      label: 시도한 방법
+      description: 이미 시도해 본 방법이 있다면 알려주세요
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: 실행 환경
+      options:
+        - Windows 11 + WSL2
+        - Windows 10 + WSL2
+        - macOS
+        - Linux
+        - GitHub Codespaces
+        - 기타
+
+  - type: input
+    id: lab-target
+    attributes:
+      label: 해당 Lab
+      placeholder: "예: lab01-python-app"

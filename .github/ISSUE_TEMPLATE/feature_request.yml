@@ -1,0 +1,58 @@
+name: ✨ 기능 요청
+description: 새로운 기능이나 개선 사항을 제안해주세요
+title: "[FEAT] "
+labels: ["enhancement"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        좋은 아이디어를 제안해주셔서 감사합니다! 아래 항목을 작성해주세요.
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: 기능 설명
+      description: 어떤 기능이 필요하신가요?
+      placeholder: "예: Codespaces에서 Docker Compose 예제 추가..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 필요한 이유
+      description: 이 기능이 왜 필요한가요? 어떤 문제를 해결하나요?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: 제안하는 해결 방법
+      description: 어떻게 구현하면 좋을지 아이디어가 있으신가요? (선택)
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 카테고리
+      options:
+        - 개발환경 설정 (WSL2, Docker, K8s 등)
+        - GitHub Codespaces
+        - Python Lab
+        - Node.js Lab
+        - Java Lab
+        - Kubernetes Lab
+        - AI/LLM 도구
+        - 문서/README 개선
+        - CI/CD (GitHub Actions)
+        - 기타
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: 확인 사항
+      options:
+        - label: 기존 이슈를 검색하여 중복이 아님을 확인했습니다.
+          required: true

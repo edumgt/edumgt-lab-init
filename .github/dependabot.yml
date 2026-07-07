@@ -1,0 +1,86 @@
+version: 2
+updates:
+  # Python 의존성 (lab01-python-app)
+  - package-ecosystem: "pip"
+    directory: "/lab01-python-app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Seoul"
+    reviewers:
+      - "edumgt"
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Node.js 의존성 (lab02-node-app)
+  - package-ecosystem: "npm"
+    directory: "/lab02-node-app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Seoul"
+    reviewers:
+      - "edumgt"
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Java (Maven) 의존성 (lab03-java-app)
+  - package-ecosystem: "maven"
+    directory: "/lab03-java-app"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "edumgt"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Docker 베이스 이미지
+  - package-ecosystem: "docker"
+    directory: "/lab01-python-app"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(docker)"
+
+  - package-ecosystem: "docker"
+    directory: "/lab02-node-app"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(docker)"
+
+  - package-ecosystem: "docker"
+    directory: "/lab03-java-app"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(docker)"
+
+  # GitHub Actions 버전 업데이트
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    reviewers:
+      - "edumgt"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(actions)"

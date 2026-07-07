@@ -1,0 +1,31 @@
+# .github/CODEOWNERS
+# 파일/디렉토리별 자동 리뷰어 지정
+# 형식: <파일 패턴>  <GitHub 계정 또는 팀>
+
+# 전체 저장소 기본 리뷰어
+*                         @edumgt
+
+# Python Lab
+/lab01-python-app/        @edumgt
+
+# Node.js Lab
+/lab02-node-app/          @edumgt
+
+# Java Lab
+/lab03-java-app/          @edumgt
+
+# Kubernetes 설정
+/lab04-k8s/               @edumgt
+
+# VMware 설정
+/lab05-vmware-vm/         @edumgt
+
+# GitHub Actions 워크플로우
+/.github/workflows/       @edumgt
+
+# devcontainer 설정
+/.devcontainer/           @edumgt
+
+# Docker 관련 파일
+Dockerfile                @edumgt
+docker-compose*.yml       @edumgt

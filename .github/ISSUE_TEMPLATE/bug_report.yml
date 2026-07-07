@@ -1,0 +1,81 @@
+name: 🐛 버그 리포트
+description: 버그나 오류를 신고해주세요
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        버그를 발견하셨군요! 아래 항목을 최대한 자세히 작성해주세요.
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: 버그 설명
+      description: 어떤 문제가 발생했나요?
+      placeholder: "예: FastAPI 서버 시작 시 포트 충돌 오류 발생..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: 재현 방법
+      description: 버그를 재현하는 단계를 작성해주세요
+      value: |
+        1. `...` 실행
+        2. `...` 입력
+        3. 오류 메시지 확인
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: 예상 동작
+      description: 정상적으로 동작했다면 어떻게 되었어야 하나요?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: 실행 환경
+      multiple: false
+      options:
+        - Windows 11 + WSL2
+        - Windows 10 + WSL2
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Linux (Ubuntu 22.04)
+        - GitHub Codespaces
+        - Docker 컨테이너
+        - 기타
+    validations:
+      required: true
+
+  - type: input
+    id: lab-target
+    attributes:
+      label: 해당 Lab
+      description: 어떤 lab에서 발생한 문제인가요?
+      placeholder: "예: lab01-python-app"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 오류 로그
+      description: 오류 메시지나 로그를 붙여넣어 주세요
+      render: shell
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: 확인 사항
+      options:
+        - label: 기존 이슈를 검색하여 중복이 아님을 확인했습니다.
+          required: true
+        - label: README의 환경 구성 가이드를 먼저 확인했습니다.
+          required: true

@@ -1566,6 +1566,1344 @@ flowchart TD
 }
 ```
 
+---
+
+# 🚀 GitHub Codespaces 완벽 활용 가이드
+
+GitHub Codespaces는 브라우저 또는 VS Code에서 즉시 실행되는 **클라우드 기반 개발 환경**입니다. 로컬 PC에 아무것도 설치하지 않아도 컨테이너 안에서 완전한 개발 환경을 사용할 수 있습니다.
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                   GitHub Codespaces 구조                          │
+│                                                                    │
+│  GitHub 저장소                                                    │
+│       │                                                           │
+│       ▼                                                           │
+│  Codespace 생성 (.devcontainer/devcontainer.json 읽기)           │
+│       │                                                           │
+│       ▼                                                           │
+│  Azure 클라우드 VM (2~32 vCPU, 4~64 GB RAM)                     │
+│       │                                                           │
+│       ├── VS Code 서버 (브라우저 / Desktop)                       │
+│       ├── 터미널 (zsh / bash)                                    │
+│       ├── 포트 포워딩 (8000, 3000, 8080 등)                      │
+│       └── GitHub Copilot 자동 연동                               │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+## Codespaces 무료 사용 한도 (2025년 기준)
+
+| GitHub 플랜 | 월 무료 컴퓨팅 | 월 무료 저장소 |
+|------------|--------------|--------------|
+| **Free** | 120 코어시간 (2코어 기준 60시간) | 15 GB/월 |
+| **Pro** | 180 코어시간 | 20 GB/월 |
+| **Team/Enterprise** | 별도 조직 청구 | 별도 조직 청구 |
+
+> 사용량 확인: https://github.com/settings/billing/usage
+
+---
+
+## 1. Codespace 생성 및 시작
+
+### 방법 A — GitHub 웹에서 생성
+
+```
+1. 저장소 페이지 접속
+2. 초록색 [< > Code] 버튼 클릭
+3. [Codespaces] 탭 선택
+4. [Create codespace on main] 클릭
+   → 또는 [+ New with options...] 로 머신 타입 선택 후 생성
+```
+
+### 방법 B — GitHub CLI로 생성
+
+```bash
+# GitHub CLI 설치
+gh auth login
+
+# 현재 저장소에 Codespace 생성
+gh codespace create --repo edumgt/edumgt-lab-init
+
+# 특정 브랜치로 생성
+gh codespace create --repo edumgt/edumgt-lab-init --branch develop
+
+# 머신 타입 지정 (2코어/4GB, 4코어/8GB 등)
+gh codespace create --repo edumgt/edumgt-lab-init --machine basicLinux32gb
+
+# 생성된 Codespace 목록 확인
+gh codespace list
+
+# Codespace에 터미널 접속
+gh codespace ssh
+
+# VS Code로 Codespace 열기
+gh codespace code
+```
+
+### 방법 C — VS Code Desktop에서 연결
+
+```
+1. VS Code 확장 [GitHub Codespaces] 설치
+2. Ctrl+Shift+P → "Codespaces: Connect to Codespace" 실행
+3. GitHub 로그인 후 기존 Codespace 선택 또는 새로 생성
+```
+
+---
+
+## 2. devcontainer.json 설정 (개발 환경 자동 구성)
+
+저장소 루트에 `.devcontainer/devcontainer.json` 파일을 추가하면 Codespace 시작 시 개발 환경이 **자동으로 구성**됩니다.
+
+### edumgt-lab-init 전용 devcontainer.json
+
+```json
+// .devcontainer/devcontainer.json
+{
+  "name": "edumgt-lab-init Dev Environment",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17",
+      "installMaven": true
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "vscjava.vscode-java-pack",
+        "ms-azuretools.vscode-docker",
+        "yzhang.markdown-all-in-one",
+        "shd101wyy.markdown-preview-enhanced",
+        "mhutchie.git-graph",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2
+      }
+    }
+  },
+
+  "forwardPorts": [8000, 3000, 8080, 5000],
+  "portsAttributes": {
+    "8000": { "label": "Python FastAPI", "onAutoForward": "notify" },
+    "3000": { "label": "Node.js Express", "onAutoForward": "notify" },
+    "8080": { "label": "Spring Boot", "onAutoForward": "notify" }
+  },
+
+  "postCreateCommand": "pip install -r lab01-python-app/requirements.txt && npm install --prefix lab02-node-app",
+
+  "remoteEnv": {
+    "PYTHONPATH": "${containerWorkspaceFolder}"
+  }
+}
+```
+
+### devcontainer 주요 속성 설명
+
+| 속성 | 설명 | 예시 |
+|------|------|------|
+| `image` | 기반 컨테이너 이미지 | `mcr.microsoft.com/devcontainers/python:3.11` |
+| `features` | 자동 설치할 도구 (Python, Node, Docker 등) | `ghcr.io/devcontainers/features/python:1` |
+| `customizations.vscode.extensions` | 자동 설치할 VS Code 확장 | `"GitHub.copilot"` |
+| `forwardPorts` | 외부에서 접근 가능하게 할 포트 목록 | `[8000, 3000]` |
+| `postCreateCommand` | 컨테이너 생성 후 실행할 스크립트 | `pip install -r requirements.txt` |
+| `postStartCommand` | Codespace 시작마다 실행 | `npm run dev` |
+
+---
+
+## 3. Codespaces에서 각 Lab 실행하기
+
+### lab01-python-app (FastAPI)
+
+```bash
+# Codespace 터미널에서 실행
+cd lab01-python-app
+pip install -r requirements.txt
+python main.py
+
+# 또는 uvicorn 직접 실행
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+# → 포트 8000이 자동으로 포워딩됨
+# → VS Code 하단 PORTS 탭에서 URL 확인 후 브라우저 접속
+```
+
+### lab02-node-app (Express)
+
+```bash
+cd lab02-node-app
+npm install
+node index.js
+
+# → 포트 3000 포워딩 후 브라우저에서 접속 가능
+```
+
+### lab03-java-app (Spring Boot)
+
+```bash
+cd lab03-java-app
+mvn clean package -DskipTests
+java -jar target/*.jar
+
+# Maven 래퍼 사용 시
+./mvnw spring-boot:run
+
+# → 포트 8080 포워딩
+```
+
+### Docker-in-Docker 활용 (컨테이너 빌드)
+
+```bash
+# Codespace 안에서 Docker 이미지 빌드
+docker build -t lab01-python ./lab01-python-app
+docker run -p 8000:8000 lab01-python
+
+# Docker Compose 실행
+docker compose up -d
+```
+
+---
+
+## 4. 포트 포워딩 및 외부 공유
+
+Codespace의 포트를 외부에 공개하면 팀원이 내 개발 서버에 실시간 접속할 수 있습니다.
+
+```
+VS Code 하단 → PORTS 탭 → 포트 번호 우클릭
+  → [Port Visibility] → [Public] 선택
+  → 생성된 URL 공유 (예: https://xxxx-8000.app.github.dev)
+```
+
+```bash
+# GitHub CLI로 포트 가시성 변경
+gh codespace ports visibility 8000:public -c <codespace-name>
+
+# 포트 목록 확인
+gh codespace ports -c <codespace-name>
+```
+
+> ⚠️ Public 포트는 인증 없이 접근 가능 → 테스트·데모용으로만 사용하고 민감 데이터 노출 주의
+
+---
+
+## 5. Codespace 시크릿 (환경 변수) 관리
+
+API 키, DB 비밀번호 같은 민감 정보를 안전하게 주입합니다.
+
+```
+GitHub → Settings → Codespaces → Secrets
+  → [New secret] 클릭
+  → Name: OPENAI_API_KEY
+  → Value: sk-xxxxxxxxxxxx
+  → Repository: edumgt/edumgt-lab-init 선택
+```
+
+```bash
+# Codespace 안에서 사용
+echo $OPENAI_API_KEY
+
+# Python 코드에서
+import os
+api_key = os.environ["OPENAI_API_KEY"]
+```
+
+---
+
+## 6. Dotfiles — 나만의 Codespace 환경 세팅
+
+매번 새 Codespace를 만들 때 개인 설정(zsh, vim, git 설정 등)을 자동 적용합니다.
+
+```
+GitHub → Settings → Codespaces → Dotfiles
+  → Enable dotfiles 체크
+  → Dotfiles repository: <본인-아이디>/dotfiles 설정
+```
+
+```bash
+# dotfiles 저장소 구조 예시
+dotfiles/
+├── install.sh          # 설치 스크립트 (Codespace 생성 시 자동 실행)
+├── .bashrc             # bash 설정
+├── .zshrc              # zsh 설정
+├── .gitconfig          # git 전역 설정
+└── .vimrc              # vim 설정
+```
+
+```bash
+# install.sh 예시
+#!/bin/bash
+cp .bashrc ~/.bashrc
+cp .gitconfig ~/.gitconfig
+echo "Dotfiles applied successfully!"
+
+# git 전역 설정 적용
+git config --global user.name "본인 이름"
+git config --global user.email "본인 이메일"
+git config --global alias.st status
+git config --global alias.co checkout
+git config --global alias.br branch
+git config --global alias.lg "log --oneline --graph --decorate --all"
+```
+
+---
+
+## 7. GitHub Copilot + Codespaces 연동
+
+Codespace에서는 GitHub Copilot이 **자동으로 활성화**됩니다.
+
+```bash
+# Copilot Chat으로 코드 설명 요청 (VS Code 내)
+# Ctrl+Shift+I → Copilot Chat 패널 열기
+
+# 선택한 코드에 대한 설명 요청
+# 코드 블록 선택 → 우클릭 → [Copilot] → [Explain This]
+
+# 코드 수정 제안
+# 코드 선택 → Ctrl+I → "/fix 이 코드의 버그를 찾아줘"
+
+# 단위 테스트 생성
+# 코드 선택 → Ctrl+I → "/tests 이 함수의 단위 테스트를 작성해줘"
+```
+
+### Copilot 주요 슬래시 명령어
+
+| 명령어 | 기능 |
+|--------|------|
+| `/explain` | 선택한 코드 설명 |
+| `/fix` | 버그·오류 수정 제안 |
+| `/tests` | 단위 테스트 자동 생성 |
+| `/doc` | 함수·클래스 문서 주석 생성 |
+| `/optimize` | 코드 성능 최적화 제안 |
+| `/simplify` | 코드 단순화·리팩터링 |
+
+---
+
+## 8. Codespace 수명 주기 관리
+
+```bash
+# 실행 중인 Codespace 목록
+gh codespace list
+
+# Codespace 중지 (요금 절약 — 저장소 유지)
+gh codespace stop -c <codespace-name>
+
+# Codespace 재시작
+gh codespace code -c <codespace-name>
+
+# Codespace 삭제 (저장소 완전 삭제)
+gh codespace delete -c <codespace-name>
+
+# 30일 이상 비활성 Codespace는 자동 삭제됨
+# Settings → Codespaces → Default idle timeout 설정 가능
+```
+
+> 💡 **비용 절약 팁:** 사용 후 반드시 Stop(중지)하세요. Running 상태에서만 컴퓨팅 요금이 발생합니다. 중지 상태에서는 저장소 비용만 발생합니다.
+
+---
+
+# 🔧 GitHub 핵심 기능 완전 활용 가이드
+
+## GitHub Actions — CI/CD 자동화
+
+GitHub Actions는 코드 푸시, PR 생성, 스케줄 등 이벤트 발생 시 **자동으로 빌드·테스트·배포**를 수행하는 CI/CD 플랫폼입니다.
+
+### 워크플로우 파일 기본 구조
+
+```yaml
+# .github/workflows/ci.yml
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 9 * * 1'   # 매주 월요일 오전 9시 (UTC)
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 의존성 설치
+        run: |
+          pip install -r lab01-python-app/requirements.txt
+
+      - name: 테스트 실행
+        run: |
+          cd lab01-python-app
+          python -m pytest tests/ -v
+
+      - name: 테스트 커버리지 리포트
+        run: |
+          pip install pytest-cov
+          pytest --cov=. --cov-report=xml
+
+      - name: 커버리지 업로드 (Codecov)
+        uses: codecov/codecov-action@v4
+```
+
+### 실전 워크플로우 예시
+
+```yaml
+# .github/workflows/docker-build-push.yml
+name: Docker Build & Push
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker Buildx 설정
+        uses: docker/setup-buildx-action@v3
+
+      - name: GitHub Container Registry 로그인
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 메타데이터 추출 (태그, 라벨)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=sha
+
+      - name: 빌드 및 푸시
+        uses: docker/build-push-action@v5
+        with:
+          context: ./lab01-python-app
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+```
+
+### Actions 이벤트 트리거 종류
+
+| 트리거 | 예시 | 설명 |
+|--------|------|------|
+| `push` | `branches: [main]` | 특정 브랜치 푸시 시 |
+| `pull_request` | `types: [opened, synchronize]` | PR 생성/갱신 시 |
+| `schedule` | `cron: '0 9 * * *'` | 정기 실행 (cron 형식) |
+| `workflow_dispatch` | (없음) | 수동 실행 버튼 활성화 |
+| `release` | `types: [published]` | 릴리즈 발행 시 |
+| `issue_comment` | `types: [created]` | 이슈 댓글 작성 시 |
+
+### 주요 공식 Actions
+
+```yaml
+# 코드 체크아웃
+- uses: actions/checkout@v4
+
+# 언어 환경 설정
+- uses: actions/setup-python@v5
+  with: { python-version: '3.11' }
+- uses: actions/setup-node@v4
+  with: { node-version: '20' }
+- uses: actions/setup-java@v4
+  with: { java-version: '17', distribution: 'temurin' }
+
+# 캐시 활용 (빌드 속도 향상)
+- uses: actions/cache@v4
+  with:
+    path: ~/.cache/pip
+    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+# 아티팩트 업로드/다운로드
+- uses: actions/upload-artifact@v4
+  with: { name: build-output, path: dist/ }
+- uses: actions/download-artifact@v4
+  with: { name: build-output }
+
+# GitHub Pages 배포
+- uses: actions/deploy-pages@v4
+
+# Slack 알림
+- uses: slackapi/slack-github-action@v1.26.0
+  with:
+    payload: '{"text": "✅ 배포 완료: ${{ github.ref_name }}"}'
+  env:
+    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+```
+
+### 시크릿 및 환경변수 관리
+
+```bash
+# GitHub CLI로 시크릿 설정
+gh secret set DOCKER_PASSWORD --body "my-password"
+gh secret set AWS_ACCESS_KEY_ID --body "AKIA..."
+
+# 워크플로우에서 시크릿 사용
+env:
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+
+# 환경별 시크릿 (Environments)
+environment: production
+env:
+  API_KEY: ${{ secrets.PROD_API_KEY }}
+```
+
+---
+
+## GitHub Issues — 이슈 관리 고급 활용
+
+### 이슈 템플릿 설정
+
+```yaml
+# .github/ISSUE_TEMPLATE/bug_report.yml
+name: 🐛 버그 리포트
+description: 버그나 오류를 신고해주세요
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        버그를 발견하셨군요! 아래 항목을 최대한 자세히 작성해주세요.
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: 버그 설명
+      description: 어떤 문제가 발생했나요?
+      placeholder: "FastAPI 서버 시작 시 포트 충돌 오류 발생..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: 재현 방법
+      description: 버그를 재현하는 단계를 작성해주세요
+      value: |
+        1. `...` 실행
+        2. `...` 입력
+        3. 오류 메시지 확인
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: 실행 환경
+      options:
+        - Windows 11 + WSL2
+        - macOS
+        - Linux (Ubuntu)
+        - GitHub Codespaces
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 오류 로그
+      description: 오류 메시지나 로그를 붙여넣어 주세요
+      render: shell
+```
+
+```yaml
+# .github/ISSUE_TEMPLATE/feature_request.yml
+name: ✨ 기능 요청
+description: 새로운 기능을 제안해주세요
+title: "[FEAT] "
+labels: ["enhancement"]
+
+body:
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: 기능 설명
+      description: 어떤 기능이 필요하신가요?
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 필요한 이유
+      description: 이 기능이 왜 필요한가요?
+    validations:
+      required: true
+```
+
+### 이슈 레이블 전략
+
+```bash
+# GitHub CLI로 레이블 생성
+gh label create "bug" --color "d73a4a" --description "버그 및 오류"
+gh label create "enhancement" --color "a2eeef" --description "새 기능 요청"
+gh label create "documentation" --color "0075ca" --description "문서 개선"
+gh label create "good first issue" --color "7057ff" --description "처음 기여자에게 적합"
+gh label create "help wanted" --color "008672" --description "도움 필요"
+gh label create "priority: high" --color "e11d48" --description "높은 우선순위"
+gh label create "priority: low" --color "6ee7b7" --description "낮은 우선순위"
+gh label create "in progress" --color "fbbf24" --description "작업 진행 중"
+
+# 이슈 생성 (CLI)
+gh issue create \
+  --title "[BUG] Python FastAPI 서버 시작 오류" \
+  --body "포트 8000이 이미 사용 중일 때 오류 발생" \
+  --label "bug,priority: high" \
+  --assignee "@me"
+
+# 이슈 목록 확인
+gh issue list --label "bug" --state open
+
+# 이슈 닫기
+gh issue close 42 --comment "수정 완료 (#43 PR에서 해결)"
+```
+
+### 마일스톤 활용
+
+```bash
+# 마일스톤 생성
+gh api repos/edumgt/edumgt-lab-init/milestones \
+  --method POST \
+  --field title="v1.0 - 기본 환경 설정 완료" \
+  --field due_on="2025-08-31T00:00:00Z" \
+  --field description="Python, Node.js, Java, Docker, K8s 환경 구축 완료"
+
+# 이슈에 마일스톤 연결
+gh issue edit 42 --milestone "v1.0 - 기본 환경 설정 완료"
+```
+
+---
+
+## GitHub Pull Request — 코드 리뷰 고급 활용
+
+### PR 템플릿 설정
+
+```markdown
+<!-- .github/pull_request_template.md -->
+## 변경 내용 요약
+<!-- 어떤 변경을 했는지 간략히 설명하세요 -->
+
+## 변경 유형
+- [ ] 🐛 버그 수정 (기존 기능이 정상 동작하도록 수정)
+- [ ] ✨ 새 기능 (기존 기능을 손상시키지 않는 새 기능 추가)
+- [ ] 💥 Breaking change (기존 기능을 변경하거나 제거)
+- [ ] 📝 문서 수정
+- [ ] ♻️ 리팩터링 (기능 변경 없이 코드 개선)
+- [ ] ✅ 테스트 추가/수정
+
+## 관련 이슈
+- Closes #이슈번호
+
+## 테스트 방법
+<!-- 변경 사항을 어떻게 테스트했는지 설명하세요 -->
+```bash
+# 테스트 명령어
+python -m pytest tests/ -v
+```
+
+## 스크린샷 (UI 변경 시)
+<!-- 변경 전후 스크린샷을 첨부해주세요 -->
+
+## 체크리스트
+- [ ] 코드 스타일 가이드 준수
+- [ ] 단위 테스트 추가/수정
+- [ ] 문서(README) 업데이트
+- [ ] Breaking change에 대한 공지 포함
+```
+
+### 브랜치 보호 규칙 설정
+
+```
+GitHub 저장소 → Settings → Branches → [Add rule]
+
+Branch name pattern: main
+
+✅ Require a pull request before merging
+   ✅ Require approvals: 1명 이상
+   ✅ Dismiss stale pull request approvals when new commits are pushed
+   ✅ Require review from Code Owners
+
+✅ Require status checks to pass before merging
+   ✅ Require branches to be up to date before merging
+   Status checks: CI Pipeline / test
+
+✅ Require conversation resolution before merging
+✅ Require signed commits
+✅ Include administrators
+✅ Restrict who can push to matching branches
+```
+
+### CODEOWNERS 파일
+
+```bash
+# .github/CODEOWNERS
+# 파일/디렉토리별 자동 리뷰어 지정
+
+# 전체 저장소 기본 리뷰어
+*                   @edumgt
+
+# Python 관련 변경 시 자동 지정
+/lab01-python-app/  @python-lead
+
+# Node.js 관련 변경 시 자동 지정
+/lab02-node-app/    @node-lead
+
+# Kubernetes 관련 변경 시 자동 지정
+/lab04-k8s/         @devops-lead
+
+# 인프라 설정 변경 시 (복수 지정 가능)
+*.yml               @devops-lead @team-lead
+*.yaml              @devops-lead @team-lead
+
+# Dockerfile 변경 시
+Dockerfile          @devops-lead
+```
+
+### PR 리뷰 워크플로우
+
+```bash
+# PR 생성 (GitHub CLI)
+gh pr create \
+  --title "feat: lab01 FastAPI 헬스체크 엔드포인트 추가" \
+  --body "$(cat .github/pull_request_template.md)" \
+  --base main \
+  --head feature/health-check \
+  --reviewer "edumgt" \
+  --label "enhancement"
+
+# PR 목록 확인
+gh pr list --state open
+
+# PR 상세 보기
+gh pr view 15
+
+# PR 체크 상태 확인
+gh pr checks 15
+
+# PR 승인 (리뷰어 입장)
+gh pr review 15 --approve --body "LGTM! 코드 잘 작성됐습니다."
+
+# PR 변경 요청
+gh pr review 15 --request-changes --body "테스트 케이스를 추가해주세요."
+
+# PR 머지 (Squash)
+gh pr merge 15 --squash --delete-branch
+
+# PR 머지 (일반)
+gh pr merge 15 --merge
+
+# PR 머지 (Rebase)
+gh pr merge 15 --rebase
+```
+
+---
+
+## GitHub Projects — 프로젝트 보드 관리
+
+GitHub Projects는 이슈·PR을 **칸반 보드 또는 스프린트 방식**으로 관리하는 프로젝트 관리 도구입니다.
+
+### 프로젝트 생성 및 설정
+
+```
+1. 저장소 → [Projects] 탭 → [New project]
+2. 템플릿 선택:
+   - Board: 칸반 보드 (To Do / In Progress / Done)
+   - Table: 스프레드시트 형식
+   - Roadmap: 타임라인/간트 차트
+3. 프로젝트 이름 입력 → [Create]
+```
+
+### 자동화 규칙 설정
+
+```
+Projects → Settings → Workflows
+
+기본 제공 자동화:
+  ✅ Item added to project → Status: Todo
+  ✅ Item reopened → Status: Todo
+  ✅ Item closed → Status: Done
+  ✅ Pull request merged → Status: Done
+
+커스텀 자동화 예시:
+  When: Pull request is opened
+  Filter: label = "in progress"
+  Then: Set Status = In Progress
+```
+
+### GitHub CLI로 Projects 활용
+
+```bash
+# 프로젝트 목록 확인
+gh project list --owner edumgt
+
+# 이슈를 프로젝트에 추가
+gh project item-add 1 --owner edumgt --url https://github.com/edumgt/edumgt-lab-init/issues/42
+
+# 프로젝트 아이템 상태 변경
+gh project item-edit --id <item-id> --field-id <field-id> --project-id 1 --text "In Progress"
+```
+
+---
+
+## GitHub Pages — 정적 사이트 무료 호스팅
+
+GitHub Pages를 활용하면 저장소의 HTML/Markdown 파일을 **무료 정적 웹사이트**로 게시할 수 있습니다.
+
+### 설정 방법
+
+```
+저장소 → Settings → Pages
+
+Source:
+  [Deploy from a branch] 선택
+  Branch: main / docs 또는 gh-pages
+
+또는
+
+  [GitHub Actions] 선택 → 워크플로우로 자동 배포
+```
+
+### GitHub Actions로 Jekyll 사이트 배포
+
+```yaml
+# .github/workflows/pages.yml
+name: GitHub Pages 배포
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v4
+      - uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
+      - uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
+```
+
+### 커스텀 도메인 설정
+
+```bash
+# CNAME 파일 생성 (docs/ 또는 루트)
+echo "lab.edumgt.com" > CNAME
+
+# DNS 설정 (도메인 공급자에서)
+# Type: CNAME
+# Name: lab
+# Value: edumgt.github.io
+```
+
+---
+
+## GitHub Discussions — 커뮤니티 토론
+
+GitHub Discussions는 Q&A, 아이디어 공유, 공지사항 등 **커뮤니티 소통**을 위한 포럼입니다.
+
+```
+저장소 → Settings → Features → ✅ Discussions 활성화
+```
+
+### 카테고리 활용
+
+| 카테고리 | 용도 | 예시 |
+|----------|------|------|
+| 📣 Announcements | 공지사항 | 새 Lab 추가 안내 |
+| 💡 Ideas | 아이디어 제안 | 새 실습 주제 제안 |
+| ❓ Q&A | 질문과 답변 | 환경 설정 문의 |
+| 🙏 Show and tell | 결과물 공유 | 완성한 프로젝트 공유 |
+| 🗳️ Polls | 투표 | 다음 회차 주제 투표 |
+
+```bash
+# GitHub CLI로 Discussion 생성
+gh api graphql -f query='
+mutation {
+  createDiscussion(input: {
+    repositoryId: "저장소ID"
+    categoryId: "카테고리ID"
+    title: "lab01 실행 시 자주 발생하는 오류 Q&A"
+    body: "FastAPI 실행 관련 질문은 여기에 남겨주세요."
+  }) {
+    discussion { url }
+  }
+}'
+```
+
+---
+
+## GitHub Packages — 패키지 레지스트리
+
+GitHub Packages는 Docker 이미지, npm, Maven, PyPI 등 패키지를 **GitHub 저장소와 통합하여 관리**하는 레지스트리입니다.
+
+### Docker 이미지 배포 (GitHub Container Registry)
+
+```bash
+# 1. GitHub Container Registry(GHCR) 로그인
+echo $GITHUB_TOKEN | docker login ghcr.io -u <github-username> --password-stdin
+
+# 2. 이미지 빌드 및 태깅
+docker build -t ghcr.io/edumgt/edumgt-lab-init/lab01-python:latest ./lab01-python-app
+docker build -t ghcr.io/edumgt/edumgt-lab-init/lab02-node:latest ./lab02-node-app
+
+# 3. 이미지 푸시
+docker push ghcr.io/edumgt/edumgt-lab-init/lab01-python:latest
+docker push ghcr.io/edumgt/edumgt-lab-init/lab02-node:latest
+
+# 4. 이미지 풀 (다른 환경에서)
+docker pull ghcr.io/edumgt/edumgt-lab-init/lab01-python:latest
+docker run -p 8000:8000 ghcr.io/edumgt/edumgt-lab-init/lab01-python:latest
+```
+
+### Actions에서 GHCR 자동 배포
+
+```yaml
+- name: GHCR 로그인
+  uses: docker/login-action@v3
+  with:
+    registry: ghcr.io
+    username: ${{ github.actor }}
+    password: ${{ secrets.GITHUB_TOKEN }}   # 별도 시크릿 불필요
+
+- name: 빌드 및 GHCR 푸시
+  uses: docker/build-push-action@v5
+  with:
+    context: ./lab01-python-app
+    push: true
+    tags: ghcr.io/${{ github.repository }}/lab01-python:${{ github.sha }}
+```
+
+---
+
+## GitHub Security — 보안 자동화
+
+### Dependabot — 의존성 자동 업데이트
+
+```yaml
+# .github/dependabot.yml
+version: 2
+updates:
+  # Python 의존성
+  - package-ecosystem: "pip"
+    directory: "/lab01-python-app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Seoul"
+    reviewers:
+      - "edumgt"
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 5
+
+  # Node.js 의존성
+  - package-ecosystem: "npm"
+    directory: "/lab02-node-app"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "express"
+        update-types: ["version-update:semver-major"]
+
+  # Java (Maven) 의존성
+  - package-ecosystem: "maven"
+    directory: "/lab03-java-app"
+    schedule:
+      interval: "monthly"
+
+  # Docker 베이스 이미지
+  - package-ecosystem: "docker"
+    directory: "/lab01-python-app"
+    schedule:
+      interval: "weekly"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+```
+
+### Code Scanning (CodeQL)
+
+```yaml
+# .github/workflows/codeql.yml
+name: CodeQL 보안 스캔
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * 1'  # 매주 월요일 새벽 2시
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    strategy:
+      matrix:
+        language: ['python', 'javascript', 'java']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: CodeQL 초기화
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: 자동 빌드
+        uses: github/codeql-action/autobuild@v3
+
+      - name: CodeQL 분석 실행
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+```
+
+### 시크릿 스캐닝 (Secret Scanning)
+
+```
+저장소 → Settings → Security → Secret scanning
+
+✅ Secret scanning 활성화
+✅ Push protection 활성화
+   → API 키, 비밀번호가 코드에 포함된 상태로 push 시 자동 차단
+
+알림 수신: 시크릿이 감지되면 이메일 + Security 탭에 알림
+```
+
+```bash
+# .gitignore로 시크릿 파일 제외
+echo ".env" >> .gitignore
+echo "*.pem" >> .gitignore
+echo "credentials.json" >> .gitignore
+echo "secrets.yaml" >> .gitignore
+
+# .env 예시 (절대 커밋하지 마세요)
+# OPENAI_API_KEY=sk-xxxxxxxxxxxx
+# DATABASE_URL=postgresql://****@localhost:5432/db
+# AWS_SECRET_ACCESS_KEY=xxxxxxxxxxxxxxxxxxxx
+```
+
+---
+
+## GitHub CLI (gh) 완전 명령어 가이드
+
+### 설치 및 인증
+
+```bash
+# 설치 (Windows — winget)
+winget install --id GitHub.cli
+
+# 설치 (macOS — Homebrew)
+brew install gh
+
+# 설치 (Linux/WSL — Ubuntu)
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+sudo apt update && sudo apt install gh
+
+# GitHub 인증
+gh auth login
+# → GitHub.com 선택 → HTTPS → 브라우저 인증
+
+# 인증 상태 확인
+gh auth status
+
+# 토큰 방식 인증 (CI 환경)
+echo $GITHUB_TOKEN | gh auth login --with-token
+```
+
+### 저장소 관련 명령어
+
+```bash
+# 저장소 생성
+gh repo create edumgt-lab-init --public --description "개발환경 초기 설정 가이드"
+
+# 저장소 클론
+gh repo clone edumgt/edumgt-lab-init
+
+# 저장소 정보 조회
+gh repo view edumgt/edumgt-lab-init
+
+# 저장소 Fork
+gh repo fork edumgt/edumgt-lab-init --clone
+
+# 저장소 토픽 설정
+gh repo edit edumgt/edumgt-lab-init --add-topic "devops,kubernetes,docker,ai"
+
+# 저장소 가시성 변경
+gh repo edit edumgt/edumgt-lab-init --visibility public
+```
+
+### 이슈 명령어
+
+```bash
+# 이슈 생성
+gh issue create --title "제목" --body "내용" --label "bug" --assignee "@me"
+
+# 이슈 목록 (JSON 출력)
+gh issue list --json number,title,labels,assignees --limit 20
+
+# 이슈 필터링
+gh issue list --label "bug" --state open --assignee "@me"
+
+# 이슈 코멘트 추가
+gh issue comment 42 --body "확인했습니다. 내일까지 수정하겠습니다."
+
+# 이슈 닫기
+gh issue close 42
+
+# 이슈 재오픈
+gh issue reopen 42
+```
+
+### PR 명령어
+
+```bash
+# PR 생성
+gh pr create --fill  # 커밋 메시지로 자동 채우기
+
+# PR 상태 확인
+gh pr status
+
+# PR 체크아웃 (다른 사람 PR 로컬에서 검토)
+gh pr checkout 15
+
+# PR 차이 확인
+gh pr diff 15
+
+# PR 머지 후 브랜치 삭제
+gh pr merge 15 --squash --delete-branch --auto
+
+# Draft PR 생성
+gh pr create --draft --title "WIP: 작업 중"
+
+# PR Ready 상태로 변경
+gh pr ready 15
+```
+
+### Actions 명령어
+
+```bash
+# 워크플로우 목록 확인
+gh workflow list
+
+# 워크플로우 수동 실행
+gh workflow run ci.yml --ref main
+
+# 워크플로우 실행 이력
+gh run list --workflow ci.yml --limit 10
+
+# 실행 중인 워크플로우 로그 확인
+gh run watch
+
+# 특정 실행의 로그 확인
+gh run view 1234567890 --log
+
+# 실패한 워크플로우 재실행
+gh run rerun 1234567890
+
+# 워크플로우 활성화/비활성화
+gh workflow enable ci.yml
+gh workflow disable ci.yml
+```
+
+### 시크릿 명령어
+
+```bash
+# 저장소 시크릿 설정
+gh secret set OPENAI_API_KEY
+gh secret set DATABASE_URL --body "postgresql://..."
+
+# 시크릿 목록 확인 (이름만 표시)
+gh secret list
+
+# 시크릿 삭제
+gh secret delete OPENAI_API_KEY
+
+# 환경별 시크릿
+gh secret set PROD_API_KEY --env production
+gh secret set DEV_API_KEY --env development
+```
+
+### API 직접 호출 (고급)
+
+```bash
+# REST API 직접 호출
+gh api repos/edumgt/edumgt-lab-init
+
+# 저장소 통계
+gh api repos/edumgt/edumgt-lab-init/stats/contributors
+
+# 이슈 일괄 생성 (JSON 파일 사용)
+gh api repos/edumgt/edumgt-lab-init/issues \
+  --method POST \
+  --input issue-data.json
+
+# GraphQL 쿼리
+gh api graphql -f query='
+query {
+  repository(owner: "edumgt", name: "edumgt-lab-init") {
+    issues(states: OPEN, first: 10) {
+      nodes {
+        number
+        title
+        createdAt
+      }
+    }
+  }
+}'
+```
+
+---
+
+## GitHub 고급 기능 요약
+
+### GitHub Wiki
+
+```
+저장소 → Settings → Features → ✅ Wikis 활성화
+저장소 → Wiki 탭 → [New page]
+
+# Wiki를 로컬에서 편집
+git clone https://github.com/edumgt/edumgt-lab-init.wiki.git
+cd edumgt-lab-init.wiki
+# .md 파일 편집 후 push
+```
+
+### GitHub Releases
+
+```bash
+# 릴리즈 생성 (태그 + 릴리즈 노트)
+gh release create v1.0.0 \
+  --title "v1.0.0 - 기본 환경 설정 완료" \
+  --notes "## 변경 사항
+  - Python FastAPI 환경 구성
+  - Node.js Express 환경 구성
+  - Docker 컨테이너 빌드 추가" \
+  --latest
+
+# 아티팩트 첨부
+gh release create v1.0.0 dist/*.tar.gz dist/*.zip \
+  --title "v1.0.0" \
+  --generate-notes  # 커밋 기반 자동 릴리즈 노트 생성
+
+# 릴리즈 목록
+gh release list
+
+# 최신 릴리즈 정보
+gh release view --json tagName,publishedAt,assets
+```
+
+### GitHub Gist — 코드 스니펫 공유
+
+```bash
+# Gist 생성 (공개)
+gh gist create main.py --public --desc "FastAPI 헬스체크 예제"
+
+# Gist 생성 (비공개)
+gh gist create .env.example --desc "환경변수 예시 파일"
+
+# 여러 파일로 Gist 생성
+gh gist create main.py requirements.txt Dockerfile --public
+
+# Gist 목록
+gh gist list
+
+# Gist 편집
+gh gist edit <gist-id>
+```
+
+### GitHub Insights — 저장소 분석
+
+```
+저장소 → Insights 탭
+
+주요 통계:
+  - Contributors: 기여자별 커밋 수, 추가/삭제 라인
+  - Traffic: 저장소 방문자, 클론 수
+  - Commits: 시간별 커밋 활동량
+  - Code frequency: 코드 추가/삭제 추이
+  - Dependency graph: 의존성 시각화
+  - Forks: Fork 현황
+```
+
+---
 
 ## AI 기반 개발자 페르소나 예시 10선
 

@@ -2655,7 +2655,7 @@ echo "secrets.yaml" >> .gitignore
 
 # .env 예시 (절대 커밋하지 마세요)
 # OPENAI_API_KEY=sk-xxxxxxxxxxxx
-# DATABASE_URL=******localhost:5432/db
+# DATABASE_URL=postgresql://****@localhost:5432/db
 # AWS_SECRET_ACCESS_KEY=xxxxxxxxxxxxxxxxxxxx
 ```
 

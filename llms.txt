@@ -1,0 +1,49 @@
+# edumgt-lab-init
+
+> edumgt 교육 과정(NCS 5등급, 금융·퀀트 시스템 개발)의 시작점 저장소. Windows+WSL2/macOS/Linux 개발환경 구축, Python·Node·Java 헬로월드 랩, Docker Compose 기반 AI/RAG 인프라(Ollama·Qdrant·pgvector), Kubernetes 매니페스트, VMware VM 랩, GitHub/AWS/GCP 계정·CLI 설정 가이드를 한 곳에 모아 두었습니다. 문서는 대부분 한국어입니다.
+
+- 저장소: https://github.com/edumgt/edumgt-lab-init
+- 프로젝트 허브: 공개 저장소 55개를 7단계(개발환경 → 인프라 → 데이터 → ML/DL → LLM/RAG → 금융 → 풀스택)로 정리한 목록과 학습 경로가 Readme.md에 있습니다.
+- 수업 원칙: repo 단위 실습, 코더는 AI 에이전트(Claude Code / Codex), PO·PM·SA 역할 중심. 종목 추천 금지.
+- 사전 준비 순서: WSL2 → Git/GitHub/gh → Docker → AWS 계정·CLI → VS Code + AI 에이전트 연동.
+- 필수 도구 버전: Python 3.11, Node.js 20, Java 17(Spring Boot 3.2.5), Docker Compose v2.
+- 비밀값은 `.env.example`을 `.env`로 복사해 채우며 절대 커밋하지 않습니다(OPENAI_API_KEY, ANTHROPIC_API_KEY, OLLAMA_HOST=http://localhost:11435).
+
+## 핵심 문서
+
+- [Readme.md](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/Readme.md): 수업 방식, 국비과정 개요, 프로젝트 허브(55개 저장소·학습 경로), GitHub Actions/Issues/PR/Codespaces/gh CLI 가이드, PC·네트워크 점검(PowerShell), WSL·Python·Node·Docker·Java·Git·VS Code 설치, GitHub·AWS·GCP 계정/CLI 설정, VirtualBox·VMware 네트워크, 단일 노드 Kubernetes·Nexus·Harbor·GitLab·NAS 구축까지 담은 통합 교재(약 6,900행)
+- [ai-dev-setup/README.md](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/ai-dev-setup/README.md): VS Code에 Claude Code·Codex 설치/로그인, CLAUDE.md·AGENTS.md 규칙 분리, Docker Compose 프로필로 Ollama·Qdrant·PostgreSQL(pgvector)·Playwright 실행, 포트·비밀값·문제 해결
+- [docker-setup/README.md](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/docker-setup/README.md): Windows Docker Desktop + WSL2 설치, PowerShell/WSL 양쪽에서 같은 엔진 사용, Docker Desktop이 안 열릴 때 점검·복구 절차
+- [lmstudio/README.md](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/lmstudio/README.md): LM Studio로 sLLM을 GUI에서 실행, 로컬 OpenAI 호환 API 서버, Python/Node 연동 예제, 추천 모델, Ollama 비교
+- [lab05-vmware-vm/README.md](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/lab05-vmware-vm/README.md): VMware Workstation/Fusion에 Ubuntu Server VM 1대 또는 3대(control-plane 1 + worker 2) 생성, kubeadm 클러스터 준비
+
+## 실습 랩 (코드)
+
+- [lab01-python-app/main.py](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/lab01-python-app/main.py): FastAPI 헬로월드, GET / 와 /health, 포트 8000 (requirements.txt: fastapi 0.111, uvicorn 0.29)
+- [lab02-node-app/index.js](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/lab02-node-app/index.js): Express 헬로월드, GET / 와 /health, 포트 3000
+- [lab03-java-app/pom.xml](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/lab03-java-app/pom.xml): Spring Boot 3.2.5 웹 앱(com.example.HelloWorldApplication, 포트 8080)과 Java 17 문법·IO·스레드·직렬화·인코딩 예제 모음(src/main/java)
+- [lab04-k8s/python-hello-deployment.yaml](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/lab04-k8s/python-hello-deployment.yaml): Deployment + Service, 이미지 edumgt/python-hello:latest (node-hello, spring-hello 매니페스트도 같은 구조)
+
+## 인프라 (Docker Compose)
+
+- [infra/docker-compose.yml](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/infra/docker-compose.yml): 기본 서비스 postgres(pgvector, 5432)·redis(6379)·mongo(27017)·qdrant(6333/6334)·crypto-mock-db(mariadb, 3306)·keycloak(8080). 프로필 ai: ollama(11435→11434)·playwright / streaming: zookeeper·kafka(9092, 29092)·kafka-ui(8989)·nifi(8443) / graph: neo4j(7474/7687) / monitoring: prometheus(9090)·grafana(3000)
+- [infra/docker-compose.gpu.yml](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/infra/docker-compose.gpu.yml): NVIDIA Container Toolkit 설치 후 Ollama에 GPU를 붙이는 오버라이드
+- [infra/init-postgres.sql](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/infra/init-postgres.sql): 다른 edumgt 저장소(aihub-rag, python-crawling-lab, AI-Python-Domain-RAG, keycloak-lab 등)가 공유하는 PostgreSQL 사용자·DB 생성 스크립트
+- [infra/init-mariadb.sql](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/infra/init-mariadb.sql): crypto-mock-db(MariaDB) 초기 스키마: crypto_rank, hold_crypto, member, upbit_market 테이블
+- [infra/prometheus.yml](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/infra/prometheus.yml): Prometheus 스크레이프 설정
+- [infra/playwright/capture-order-actions.js](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/infra/playwright/capture-order-actions.js): Playwright로 웹 UI 동작을 자동 캡처하는 스크립트(capture-tailwind-actions.js 동일 계열)
+
+## 저장소 운영
+
+- [.github/workflows/ci.yml](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/.github/workflows/ci.yml): lab01 flake8·임포트 검사, lab02 node --check, lab03 Maven 빌드, 세 랩 Docker 빌드, Markdown 검사
+- [.github/workflows/docker-push.yml](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/.github/workflows/docker-push.yml): v*.*.* 태그 푸시 시 세 랩 이미지를 GHCR로 빌드·푸시
+- [.github/CODEOWNERS](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/.github/CODEOWNERS): 전 경로 기본 리뷰어 @edumgt
+- [.github/pull_request_template.md](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/.github/pull_request_template.md): PR 변경 요약·유형·테스트 방법·체크리스트 양식
+- [.env.example](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/.env.example): 필요한 환경 변수 목록
+
+## Optional
+
+- [Readme.md 프로젝트 허브 섹션](https://github.com/edumgt/edumgt-lab-init#edumgt-프로젝트-허브): 55개 저장소의 단계별 목록, 연관도, 경로 A~F(백엔드·MLOps·AI/LLM·클라우드·핀테크·도메인 AI) 권장 순서
+- [Readme.md GitHub Codespaces 가이드](https://github.com/edumgt/edumgt-lab-init#-github-codespaces-완벽-활용-가이드): devcontainer.json, 포트 포워딩, 시크릿, dotfiles, Copilot 연동
+- [Readme.md VMware 개발 랩](https://github.com/edumgt/edumgt-lab-init#32-vmware-개발-랩-전체-구성-요약): 단일 노드 Kubernetes 자동 설치, MetalLB Ingress, Nexus·Harbor·GitLab CE·OpenMediaVault 구성 요약
+- [edumgt GitHub 조직](https://github.com/edumgt): 허브에 나열된 나머지 실습 저장소

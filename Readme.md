@@ -1,54 +1,3 @@
-# AI 에이전트의 도움을 어떻게 받을 것인가
-
-## 플랫폼을 사용하는 방법 예시
-## github 를 사용하는 방법을 예시로 설명 합니다. 내부 변수 지정
-
-### repo 상단의 settings 메뉴 클릭
-![alt text](images/readme-image.png)
-
-### secrets and variables 메뉴 클릭
-![alt text](images/readme-image-1.png)
-
-### Actions 클릭
-![alt text](images/readme-image-2.png)
-
-### 변경화면에서 variables 메뉴클릭
-![alt text](images/readme-image-3.png)
-
-### New repo.. variable 버튼 클릭
-![alt text](images/readme-image-4.png)
-
-### 변수 입력 화면이 나옵니다.
-![alt text](images/readme-image-5.png)
-
-### 간단한 테스트 값 입력 후 버튼 클릭
-![alt text](images/readme-image-6.png)
-
-
-### 결과 화면
-![alt text](images/readme-image-7.png)
-
-### 지금 까지의 작업은 GH CLI 를 이용하지 않는 기존의 웹 콘솔 이용법 입니다.
-
-## gh cli 이용 하기
-### 본인 사용하는 에이전트 화면을 호출 합니다.
-![alt text](images/readme-image-8.png)
-
-### 프롬프트
-- gh cli 설치 확인해줘
-![alt text](images/readme-image-9.png)
-
-- gh 로그인 확인해줘
-![alt text](images/readme-image-10.png)
-
-### 본인 repo , 위의 변수 입력 repo 를 명기하여 지시 합니다.
-- https://github.com/edumgt/edumgt-lab-init 에 변수 test999/test999 입력해줘
-![alt text](images/readme-image-11.png)
-
-### 웹 콘솔에서 확인
-![alt text](images/readme-image-12.png)
-
-
 # edumgt 프로젝트 허브
 
 ![](images/infra.png)
@@ -6840,3 +6789,52 @@ aws codebuild list-builds-for-project --project-name MyProject
 aws codebuild batch-get-builds --ids <build-id>
 ```
 
+# AI 에이전트의 도움을 어떻게 받을 것인가
+
+## 플랫폼을 사용하는 방법 예시
+## github 를 사용하는 방법을 예시로 설명 합니다. 내부 변수 지정
+
+### repo 상단의 settings 메뉴 클릭
+![alt text](images/readme-image.png)
+
+### secrets and variables 메뉴 클릭
+![alt text](images/readme-image-1.png)
+
+### Actions 클릭
+![alt text](images/readme-image-2.png)
+
+### 변경화면에서 variables 메뉴클릭
+![alt text](images/readme-image-3.png)
+
+### New repo.. variable 버튼 클릭
+![alt text](images/readme-image-4.png)
+
+### 변수 입력 화면이 나옵니다.
+![alt text](images/readme-image-5.png)
+
+### 간단한 테스트 값 입력 후 버튼 클릭
+![alt text](images/readme-image-6.png)
+
+
+### 결과 화면
+![alt text](images/readme-image-7.png)
+
+### 지금 까지의 작업은 GH CLI 를 이용하지 않는 기존의 웹 콘솔 이용법 입니다.
+
+## gh cli 이용 하기
+### 본인 사용하는 에이전트 화면을 호출 합니다.
+![alt text](images/readme-image-8.png)
+
+### 프롬프트
+- gh cli 설치 확인해줘
+![alt text](images/readme-image-9.png)
+
+- gh 로그인 확인해줘
+![alt text](images/readme-image-10.png)
+
+### 본인 repo , 위의 변수 입력 repo 를 명기하여 지시 합니다.
+- https://github.com/edumgt/edumgt-lab-init 에 변수 test999/test999 입력해줘
+![alt text](images/readme-image-11.png)
+
+### 웹 콘솔에서 확인
+![alt text](images/readme-image-12.png)

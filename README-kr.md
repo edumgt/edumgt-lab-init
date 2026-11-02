@@ -1,3 +1,5 @@
+[English](README.md)
+
 # edumgt 프로젝트 허브
 
 ![](images/infra.png)

@@ -1,9 +1,9 @@
 # edumgt-lab-init
 
-> edumgt 교육 과정(NCS 5등급, 금융·퀀트 시스템 개발)의 시작점 저장소. Windows+WSL2/macOS/Linux 개발환경 구축, Python·Node·Java 헬로월드 랩, Docker Compose 기반 AI/RAG 인프라(Ollama·Qdrant·pgvector), Kubernetes 매니페스트, VMware VM 랩, GitHub/AWS/GCP 계정·CLI 설정 가이드를 한 곳에 모아 두었습니다. 문서는 대부분 한국어입니다.
+> edumgt 교육 과정(NCS 5등급, 금융·퀀트 시스템 개발)의 시작점 저장소. Windows+WSL2/macOS/Linux 개발환경 구축, Python·Node·Java 헬로월드 랩, Docker Compose 기반 AI/RAG 인프라(Ollama·Qdrant·pgvector), Kubernetes 매니페스트, VMware VM 랩, GitHub/AWS/GCP 계정·CLI 설정 가이드를 한 곳에 모아 두었습니다. 루트 가이드의 기본 문서는 영문 [README.md](README.md)이고, 기존 한글 원문은 [README-kr.md](README-kr.md)에 있습니다.
 
 - 저장소: https://github.com/edumgt/edumgt-lab-init
-- 프로젝트 허브: 공개 저장소 55개를 7단계(개발환경 → 인프라 → 데이터 → ML/DL → LLM/RAG → 금융 → 풀스택)로 정리한 목록과 학습 경로가 Readme.md에 있습니다.
+- 프로젝트 허브: 공개 저장소 55개를 7단계(개발환경 → 인프라 → 데이터 → ML/DL → LLM/RAG → 금융 → 풀스택)로 정리한 목록과 학습 경로가 README.md(영문)와 README-kr.md(한글)에 있습니다.
 - 수업 원칙: repo 단위 실습, 코더는 AI 에이전트(Claude Code / Codex), PO·PM·SA 역할 중심. 종목 추천 금지.
 - 사전 준비 순서: WSL2 → Git/GitHub/gh → Docker → AWS 계정·CLI → VS Code + AI 에이전트 연동.
 - 필수 도구 버전: Python 3.11, Node.js 20, Java 17(Spring Boot 3.2.5), Docker Compose v2.
@@ -11,7 +11,8 @@
 
 ## 핵심 문서
 
-- [Readme.md](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/Readme.md): 수업 방식, 국비과정 개요, 프로젝트 허브(55개 저장소·학습 경로), GitHub Actions/Issues/PR/Codespaces/gh CLI 가이드, PC·네트워크 점검(PowerShell), WSL·Python·Node·Docker·Java·Git·VS Code 설치, GitHub·AWS·GCP 계정/CLI 설정, VirtualBox·VMware 네트워크, 단일 노드 Kubernetes·Nexus·Harbor·GitLab·NAS 구축까지 담은 통합 교재(약 6,900행)
+- [README.md](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/README.md): 영문 통합 교재. 수업 방식, 프로젝트 허브(55개 저장소·학습 경로), GitHub Actions/Issues/PR/Codespaces/gh CLI 가이드, PC·네트워크 점검(PowerShell), WSL·Python·Node·Docker·Java·Git·VS Code 설치, GitHub·AWS·GCP 계정/CLI 설정, VirtualBox·VMware 네트워크, 단일 노드 Kubernetes·Nexus·Harbor·GitLab·NAS 구축까지 포함(약 6,800행)
+- [README-kr.md](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/README-kr.md): 위 통합 교재의 한글 원문
 - [ai-dev-setup/README.md](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/ai-dev-setup/README.md): VS Code에 Claude Code·Codex 설치/로그인, CLAUDE.md·AGENTS.md 규칙 분리, Docker Compose 프로필로 Ollama·Qdrant·PostgreSQL(pgvector)·Playwright 실행, 포트·비밀값·문제 해결
 - [docker-setup/README.md](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/docker-setup/README.md): Windows Docker Desktop + WSL2 설치, PowerShell/WSL 양쪽에서 같은 엔진 사용, Docker Desktop이 안 열릴 때 점검·복구 절차
 - [lmstudio/README.md](https://raw.githubusercontent.com/edumgt/edumgt-lab-init/main/lmstudio/README.md): LM Studio로 sLLM을 GUI에서 실행, 로컬 OpenAI 호환 API 서버, Python/Node 연동 예제, 추천 모델, Ollama 비교
@@ -43,7 +44,7 @@
 
 ## Optional
 
-- [Readme.md 프로젝트 허브 섹션](https://github.com/edumgt/edumgt-lab-init#edumgt-프로젝트-허브): 55개 저장소의 단계별 목록, 연관도, 경로 A~F(백엔드·MLOps·AI/LLM·클라우드·핀테크·도메인 AI) 권장 순서
-- [Readme.md GitHub Codespaces 가이드](https://github.com/edumgt/edumgt-lab-init#-github-codespaces-완벽-활용-가이드): devcontainer.json, 포트 포워딩, 시크릿, dotfiles, Copilot 연동
-- [Readme.md VMware 개발 랩](https://github.com/edumgt/edumgt-lab-init#32-vmware-개발-랩-전체-구성-요약): 단일 노드 Kubernetes 자동 설치, MetalLB Ingress, Nexus·Harbor·GitLab CE·OpenMediaVault 구성 요약
+- [README.md 프로젝트 허브 섹션](https://github.com/edumgt/edumgt-lab-init#edumgt-project-hub): 55개 저장소의 단계별 목록, 연관도, 경로 A~F(백엔드·MLOps·AI/LLM·클라우드·핀테크·도메인 AI) 권장 순서
+- [README.md GitHub Codespaces 가이드](https://github.com/edumgt/edumgt-lab-init#-complete-guide-to-using-github-codespaces): devcontainer.json, 포트 포워딩, 시크릿, dotfiles, Copilot 연동
+- [README.md VMware 개발 랩](https://github.com/edumgt/edumgt-lab-init#32-overall-vmware-development-lab-layout-summary): 단일 노드 Kubernetes 자동 설치, MetalLB Ingress, Nexus·Harbor·GitLab CE·OpenMediaVault 구성 요약
 - [edumgt GitHub 조직](https://github.com/edumgt): 허브에 나열된 나머지 실습 저장소
